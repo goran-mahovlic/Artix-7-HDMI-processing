@@ -47,9 +47,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library UNISIM;
-use UNISIM.VComponents.all;
-
 entity edid_rom is
    port ( clk      : in    std_logic;
           sclk_raw : in    std_logic;
@@ -232,17 +229,9 @@ architecture Behavioral of edid_rom is
    signal sdat_delay_last : std_logic := '0';
 begin
 
-i_IOBUF: IOBUF
-    generic map (
-       DRIVE => 12,
-       IOSTANDARD => "DEFAULT",
-       SLEW => "SLOW")
-    port map (
-       O  => sdat_input, -- Buffer output
-       IO => sdat_raw,   -- Buffer inout port (connect directly to top-level port)
-       I  => '0',        -- Buffer input
-       T  => data_out_sr(data_out_sr'high)      -- 3-state enable input, high=input, low=output 
-    );
+    sdat_raw <= 'Z' when data_out_sr(data_out_sr'high) = '1' else '0';
+    sdat_input <= sdat_raw;
+
     edid_debug(0) <= std_logic(sdat_delay(sdat_delay'high));
     edid_debug(1) <= sclk_raw; 
 
