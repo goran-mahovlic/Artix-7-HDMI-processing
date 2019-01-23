@@ -33,7 +33,7 @@ entity top_edid_test is
   -- control lines as input with pullups to activate hotplug autodetection
   -- to enable hotplug, gpdi_ethn capacitor should be bypassed by 470 ohm resistor
   -- it's a C closest to the DIP switch
-  gpdi_ethp, gpdi_ethn: in std_logic;
+  gpdi_ethp, gpdi_ethn: inout std_logic;
   gpdi_cec: in std_logic;
 
   -- i2c shared for digital video and RTC
@@ -62,8 +62,7 @@ architecture Behavioral of top_edid_test is
 begin
     led <= debug;
     wifi_gpio0 <= btn(0);
-    
-    debug(5) <= gpdi_cec or gpdi_ethp or gpdi_ethn; -- in use to activate pullups
+    gpdi_ethn <= '1' when btn(0) = '1' else '0';
 
     clk_25_inst: entity work.clk_25
     port map
