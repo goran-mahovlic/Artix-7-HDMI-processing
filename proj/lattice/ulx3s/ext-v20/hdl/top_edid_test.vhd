@@ -39,7 +39,7 @@ Port
   gpdi_scl: in std_logic;
   gpdi_sda: inout std_logic;
 
-  gp, gn: in std_logic_vector(27 downto 0);
+  gp, gn: inout std_logic_vector(27 downto 0);
   
         --- HDMI out
         --hdmi_tx_cec   : inout std_logic;
@@ -61,10 +61,13 @@ architecture Behavioral of top_edid_test is
     signal clk_pixel_cable, clk_pixel, clk_shift: std_logic;
     signal clk_raw_cable: std_logic;
     signal debug, blink : std_logic_vector(7 downto 0);
+    signal reset: std_logic;
 begin
     led <= debug;
     wifi_gpio0 <= btn(0);
     gpdi_ethn <= '1' when btn(0) = '1' else '0';
+    gp(7) <= '1' when btn(0) = '1' else '0'; -- eth- hotplug
+    reset <= not btn(0);
 
     clk_25_inst: entity work.clk_25
     port map
@@ -73,26 +76,37 @@ begin
         clks3 => clk100,
         locked => open
     );
-    
-    diff_in_inst: ilvds
+
+    clock_pixel2_inst: entity work.clk_pixel2
     port map
     (
-      a  => gp(12),
-      an => gn(12),
-      z  => clk_pixel_cable
+      clki => gp(12),
+      stdby => btn(1),
+      rst => reset,
+      clkos => clk_shift,
+      clkos2 => clk_pixel,
+      lock => locked
     );
+
+    --diff_in_inst: ilvds
+    --port map
+    --(
+    --  a  => gp(12),
+    --  an => gn(12),
+    --  z  => clk_pixel_cable
+    --);
 
     -- clk_raw_cable <= not gpdi_dn(3); -- emulate differential, force insertion of fpga fabric
     -- clk_raw_cable <= gpdi_dp(3) and not gpdi_dn(3); -- emulate differential, force insertion of fpga fabric
 
-    clk_video_inst: entity work.clk_25
-    port map
-    (
-        clki => clk_pixel_cable, -- trying to use single ended mode
-        clks1 => clk_shift,
-        clks2 => clk_pixel,
-        locked => locked
-    );
+    --clk_video_inst: entity work.clk_video
+    --port map
+    --(
+    --    clki => clk_pixel_cable, -- trying to use single ended mode
+    --    clks1 => clk_shift,
+    --    clks2 => clk_pixel,
+    --    locked => locked
+    --);
     
     blink_inst: entity work.blink
     port map
@@ -110,8 +124,8 @@ begin
     port map
     (
         clk        => clk100,
-        sclk_raw   => gpdi_scl,
-        sdat_raw   => gpdi_sda,
+        sclk_raw   => gp(8), -- gpdi_scl,
+        sdat_raw   => gn(8), -- gpdi_sda,
         edid_debug => debug(2 downto 0)
     );
 

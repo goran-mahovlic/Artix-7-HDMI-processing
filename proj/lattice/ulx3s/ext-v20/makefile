@@ -27,12 +27,27 @@ CLK0_OPTIONS = \
   --p2=0 \
   --s3=100
 
+CLK1_NAME = clk_video_v
+CLK1_FILE_NAME = clocks/$(CLK1_NAME).v
+CLK1_OPTIONS = \
+  --input=25 \
+  --output=250 \
+  --s1=125 \
+  --p1=0 \
+  --s2=25 \
+  --p2=0 \
+  --s3=25 \
+  --p3=0
+
 VERILOG_FILES = \
-  $(CLK0_FILE_NAME)
+  $(CLK0_FILE_NAME) \
+  $(CLK1_FILE_NAME)
 
 VHDL_FILES = \
   $(TOP_MODULE_FILE) \
   clocks/clk_25.vhd \
+  clocks/clk_video.vhd \
+  clocks/clk_pixel2.vhd \
   hdl/blink.vhd \
   ../../../../src/edid_rom.vhd
 
