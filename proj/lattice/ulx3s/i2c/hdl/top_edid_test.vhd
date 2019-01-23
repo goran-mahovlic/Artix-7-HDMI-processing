@@ -39,7 +39,8 @@ entity top_edid_test is
   -- i2c shared for digital video and RTC
   gpdi_scl: in std_logic;
   gpdi_sda: inout std_logic;
-  
+
+  gp, gn: in std_logic_vector(27 downto 0);
 
         --- HDMI out
         --hdmi_tx_cec   : inout std_logic;
@@ -58,6 +59,7 @@ end;
 architecture Behavioral of top_edid_test is
     signal pixel_clk : std_logic;
     signal clk100, locked : std_logic;
+    signal clk_pixel_cable, clk_pixel, clk_shift: std_logic;
     signal debug, blink : std_logic_vector(7 downto 0);
 begin
     led <= debug;
@@ -69,13 +71,30 @@ begin
     (
         clki => clk_25mhz,
         clks3 => clk100,
+        locked => open
+    );
+    
+    diff_in_inst: ilvds
+    port map
+    (
+      a  => gp(12),
+      an => gn(12),
+      z  => clk_pixel_cable
+    );
+
+    clk_video_inst: entity work.clk_25
+    port map
+    (
+        clki => clk_pixel_cable,
+        clks1 => clk_shift,
+        clks2 => clk_pixel,
         locked => locked
     );
     
     blink_inst: entity work.blink
     port map
     (
-      clk => clk100,
+      clk => clk_shift,
       led => blink
     );
     
