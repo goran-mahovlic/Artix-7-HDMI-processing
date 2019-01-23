@@ -58,8 +58,9 @@ end entity;
 architecture Behavioral of edid_rom is
 
    type a_edid_rom is array (0 to 255) of std_logic_vector(7 downto 0);
-
-   signal edid_rom : a_edid_rom := (
+   
+   constant C_edid_rom_hamster : a_edid_rom := 
+   (
       ------- BASE EDID Bytes 0 to 35 -----------------------------
       -- Header
       x"00",x"FF",x"FF",x"FF",x"FF",x"FF",x"FF",x"00",
@@ -166,8 +167,30 @@ architecture Behavioral of edid_rom is
        x"8E", x"0A", x"A0", x"14", x"51", x"F0", x"16", x"00", x"26", x"7C", x"43", x"00", x"04", x"03", x"00", x"00",
        x"00", x"98", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"C9"
-      
-      );
+   );
+
+   constant C_edid_rom_640x480 : a_edid_rom := 
+   (
+     x"00", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"00",
+     x"64", x"B3", x"34", x"12", x"4E", x"61", x"BC", x"00",
+     x"01", x"1D", x"01", x"03", x"80", x"25", x"1E", x"78",
+     x"2A", x"F7", x"C1", x"A3", x"55", x"4C", x"9B", x"25",
+     x"12", x"50", x"54", x"20", x"00", x"00", x"01", x"01",
+     x"01", x"01", x"01", x"01", x"01", x"01", x"01", x"01",
+     x"01", x"01", x"01", x"01", x"01", x"01", x"C4", x"09",
+     x"80", x"9C", x"20", x"E0", x"2B", x"10", x"10", x"60",
+     x"A2", x"00", x"78", x"2D", x"11", x"01", x"01", x"1E",
+     x"00", x"00", x"00", x"FF", x"00", x"31", x"32", x"33",
+     x"34", x"35", x"36", x"37", x"38", x"0A", x"20", x"20",
+     x"20", x"20", x"00", x"00", x"00", x"FD", x"00", x"38",
+     x"4C", x"1E", x"51", x"07", x"00", x"0A", x"20", x"20",
+     x"20", x"20", x"20", x"20", x"00", x"00", x"00", x"FC",
+     x"00", x"55", x"4C", x"58", x"33", x"53", x"0A", x"20",
+     x"20", x"20", x"20", x"20", x"20", x"20", x"00", x"B6",
+     others => x"FF" -- padding
+   );
+
+   signal edid_rom : a_edid_rom := C_edid_rom_640x480;
 
    signal sclk_delay  : std_logic_vector(2 downto 0);
    signal sdat_delay  : unsigned(6 downto 0);
@@ -229,8 +252,8 @@ architecture Behavioral of edid_rom is
    signal sdat_delay_last : std_logic := '0';
 begin
 
-    sdat_raw <= 'Z' when data_out_sr(data_out_sr'high) = '1' else '0';
     sdat_input <= sdat_raw;
+    sdat_raw <= 'Z' when data_out_sr(data_out_sr'high) = '1' else '0';
 
     edid_debug(0) <= std_logic(sdat_delay(sdat_delay'high));
     edid_debug(1) <= sclk_raw; 
