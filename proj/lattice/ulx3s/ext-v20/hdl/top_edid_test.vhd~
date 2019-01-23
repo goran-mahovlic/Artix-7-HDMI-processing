@@ -6,15 +6,15 @@ library ecp5u;
 use ecp5u.components.all;
 
 entity top_edid_test is
-    Port
-    ( 
-        clk_25mhz    : in STD_LOGIC;
-        -- Control signals
-        led           : out   std_logic_vector(7 downto 0) :=(others => '0');
-        sw            : in    std_logic_vector(3 downto 0) :=(others => '0');
-        btn           : in    std_logic_vector(6 downto 0) :=(others => '0');
+Port
+( 
+  clk_25mhz    : in STD_LOGIC;
+  -- Control signals
+  led           : out   std_logic_vector(7 downto 0) :=(others => '0');
+  sw            : in    std_logic_vector(3 downto 0) :=(others => '0');
+  btn           : in    std_logic_vector(6 downto 0) :=(others => '0');
         
-        wifi_gpio0: out  std_logic;
+  wifi_gpio0: out  std_logic;
 
         --HDMI input signals
         --hdmi_rx_cec   : inout std_logic;
@@ -29,7 +29,6 @@ entity top_edid_test is
 
   -- Digital Video (differential inputs)
   gpdi_dp, gpdi_dn: in std_logic_vector(3 downto 0);
-  
   -- control lines as input with pullups to activate hotplug autodetection
   -- to enable hotplug, gpdi_ethn capacitor should be bypassed by 470 ohm resistor
   -- it's a C closest to the DIP switch
@@ -41,7 +40,7 @@ entity top_edid_test is
   gpdi_sda: inout std_logic;
 
   gp, gn: in std_logic_vector(27 downto 0);
-
+  
         --- HDMI out
         --hdmi_tx_cec   : inout std_logic;
         --hdmi_tx_clk_n : out   std_logic;
@@ -52,14 +51,15 @@ entity top_edid_test is
         --hdmi_tx_p     : out   std_logic_vector(2 downto 0);
         --hdmi_tx_n     : out   std_logic_vector(2 downto 0);
         -- For dumping symbols
-        ftdi_rxd : out std_logic      
-    );
+  ftdi_rxd : out std_logic      
+);
 end;
 
 architecture Behavioral of top_edid_test is
     signal pixel_clk : std_logic;
     signal clk100, locked : std_logic;
     signal clk_pixel_cable, clk_pixel, clk_shift: std_logic;
+    signal clk_raw_cable: std_logic;
     signal debug, blink : std_logic_vector(7 downto 0);
 begin
     led <= debug;
@@ -82,10 +82,13 @@ begin
       z  => clk_pixel_cable
     );
 
+    clk_raw_cable <= not gpdi_dn(3); -- emulate differential, force insertion of fpga fabric
+    -- clk_raw_cable <= gpdi_dp(3) and not gpdi_dn(3); -- emulate differential, force insertion of fpga fabric
+
     clk_video_inst: entity work.clk_25
     port map
     (
-        clki => clk_pixel_cable,
+        clki => clk_raw_cable, -- trying to use single ended mode
         clks1 => clk_shift,
         clks2 => clk_pixel,
         locked => locked

@@ -2,7 +2,7 @@
 PROJECT = dvicapture
 BOARD = ulx3s
 # 12 25 45 85
-FPGA_SIZE = 25
+FPGA_SIZE = 45
 
 FPGA_PACKAGE = 6bg381c
 # config flash: 1:SPI (standard), 4:QSPI (quad)
@@ -11,7 +11,7 @@ FLASH_SPI = 4
 FLASH_CHIP = is25lp128f
 
 # ******* design files *******
-CONSTRAINTS = ../constraints/ulx3s_v20_segpdi.lpf
+CONSTRAINTS = ../constraints/ulx3s_v17p.lpf
 TOP_MODULE = top_edid_test
 TOP_MODULE_FILE = hdl/$(TOP_MODULE).vhd
 # ../../../../src/hdmi_design.vhd
