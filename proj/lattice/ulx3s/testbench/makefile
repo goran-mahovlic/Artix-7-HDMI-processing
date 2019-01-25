@@ -12,7 +12,7 @@ FLASH_CHIP = is25lp128f
 
 # ******* design files *******
 CONSTRAINTS = ../constraints/ulx3s_v20.lpf
-TOP_MODULE = top_edid_test
+TOP_MODULE = top_testbench
 TOP_MODULE_FILE = hdl/$(TOP_MODULE).vhd
 # ../../../../src/hdmi_design.vhd
 
@@ -41,14 +41,19 @@ CLK1_OPTIONS = \
 
 VERILOG_FILES = \
   $(CLK0_FILE_NAME) \
-  $(CLK1_FILE_NAME)
+  $(CLK1_FILE_NAME) \
+  hdl/fake_differential.v \
+  hdl/videotest640x480_v.v
 
 VHDL_FILES = \
   $(TOP_MODULE_FILE) \
   clocks/clk_25.vhd \
   clocks/clk_video.vhd \
-  clocks/clk_pixel2.vhd \
   hdl/blink.vhd \
+  hdl/vga.vhd \
+  hdl/tmds_encoder.vhd \
+  hdl/vga2dvid.vhd \
+  hdl/videotest640x480.vhd \
   ../../../../src/edid_rom.vhd
 
 # ../../../../src/hdmi_design.vhd

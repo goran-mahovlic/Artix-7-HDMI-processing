@@ -1,3 +1,4 @@
+// *** WARNING ***
 // DDR mode uses Lattice ECP5 vendor-specific module ODDRX1F
 
 module fake_differential
