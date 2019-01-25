@@ -75,12 +75,12 @@ begin
     clk_25_inst: entity work.clk_25
     port map
     (
-        clki => clk_25mhz,
-        clko => clk_250,
-        clks1 => clk_125,
-        clks2 => clk_25,
-        clks3 => clk_100,
-        locked => open
+      clkin => clk_25mhz,
+      clkout(0) => clk_250,
+      clkout(1) => clk_125,
+      clkout(2) => clk_25,
+      clkout(3) => clk_100,
+      locked => open
     );
     
     -- video generator
@@ -101,10 +101,10 @@ begin
     clk_video_inst: entity work.clk_video
     port map
     (
-        clki => tmds_p(3), -- take tmds clock as input
-        clks1 => clk_shift,
-        clks2 => clk_pixel,
-        locked => locked
+      clkin => tmds_p(3), -- take tmds clock as input
+      clkout(0) => clk_shift,
+      clkout(2) => clk_pixel,
+      locked => locked
     );
 
     blink_inst: entity work.blink
@@ -120,10 +120,10 @@ begin
     edid_rom_inst: entity work.edid_rom
     port map
     (
-        clk        => clk_100,
-        sclk_raw   => gp(8), -- gpdi_scl,
-        sdat_raw   => gn(8), -- gpdi_sda,
-        edid_debug => debug(2 downto 0)
+      clk        => clk_100,
+      sclk_raw   => gp(8), -- gpdi_scl,
+      sdat_raw   => gn(8), -- gpdi_sda,
+      edid_debug => debug(2 downto 0)
     );
 
 end Behavioral;

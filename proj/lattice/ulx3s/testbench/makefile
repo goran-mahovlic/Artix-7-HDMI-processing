@@ -19,25 +19,22 @@ TOP_MODULE_FILE = hdl/$(TOP_MODULE).vhd
 CLK0_NAME = clk_25_v
 CLK0_FILE_NAME = clocks/$(CLK0_NAME).v
 CLK0_OPTIONS = \
-  --input=25 \
-  --output=250 \
-  --s1=125 \
-  --p1=0 \
-  --s2=25 \
-  --p2=0 \
-  --s3=100
+  --module=$(CLK0_NAME) \
+  --clkin=25 \
+  --clkout0=250 \
+  --clkout1=125 \
+  --clkout2=25 \
+  --clkout3=100
 
 CLK1_NAME = clk_video_v
 CLK1_FILE_NAME = clocks/$(CLK1_NAME).v
 CLK1_OPTIONS = \
-  --input=25 \
-  --output=250 \
-  --s1=125 \
-  --p1=0 \
-  --s2=25 \
-  --p2=0 \
-  --s3=25 \
-  --p3=0
+  --module=$(CLK1_NAME) \
+  --clkin=25 \
+  --clkout0=250 \
+  --clkout1=125 \
+  --clkout2=25 \
+  --clkout3=100
 
 VERILOG_FILES = \
   $(CLK0_FILE_NAME) \
