@@ -51,9 +51,27 @@ VHDL_FILES = \
   hdl/tmds_encoder.vhd \
   hdl/vga2dvid.vhd \
   hdl/videotest640x480.vhd \
-  ../../../../src/edid_rom.vhd
-
-# ../../../../src/hdmi_design.vhd
+  ../../../../src/edid_rom.vhd \
+  ../../../../src/pixel_processing.vhd \
+  ../../../../src/line_delay.vhd \
+  ../../../../src/input_channel.vhd \
+  ../../../../src/audio_meters.vhd \
+  ../../../../src/extract_audio_samples.vhd \
+  ../../../../src/alignment_detect.vhd \
+  ../../../../src/conversion_to_RGB.vhd \
+  ../../../../src/symbol_dump.vhd \
+  ../../../../src/guidelines.vhd \
+  ../../../../src/detect_interlace.vhd \
+  ../../../../src/expand_422_to_444.vhd \
+  ../../../../src/audio_to_db.vhd \
+  ../../../../src/edge_enhance.vhd \
+  ../../../../src/extract_video_infopacket_data.vhd \
+  ../../../../src/dvid_output.vhd \
+  ../../../../src/tmds_decoder.vhd \
+  ../../../../src_emard/serialiser_10_to_1.vhd \
+  ../../../../src_emard/deserialiser_1_to_10.vhd \
+  ../../../../src_emard/hdmi_input.vhd \
+  ../../../../src_emard/hdmi_design.vhd
 
 SCRIPTS = ../scripts
 include $(SCRIPTS)/ulx3s_diamond.mk
