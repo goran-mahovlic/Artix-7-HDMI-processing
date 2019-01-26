@@ -94,8 +94,8 @@ begin
     );
     
     -- connect output to monitor
-    gpdi_dp <= tmds_p;
-    gpdi_dn <= tmds_n;
+    --gpdi_dp <= tmds_p;
+    --gpdi_dn <= tmds_n;
     
     -- clock recovery PLL
     clk_video_inst: entity work.clk_video
@@ -114,16 +114,35 @@ begin
       led => blink
     );
     
-    debug(6) <= blink(7);
-    debug(7) <= locked;
+    --debug(6) <= blink(7);
+    --debug(7) <= locked;
 
-    edid_rom_inst: entity work.edid_rom
+    hdmi_design_inst: entity work.hdmi_design
     port map
     (
-      clk        => clk_100,
-      sclk_raw   => gp(8), -- gpdi_scl,
-      sdat_raw   => gn(8), -- gpdi_sda,
-      edid_debug => debug(2 downto 0)
+      clk100     => clk_100,
+      clk_pixel  => clk_pixel,
+      clk_pixel_shift => clk_shift,
+      clk_locked => locked,
+
+      led        => debug,
+      sw         => "00000000",
+      debug_pmod => open,
+      
+      hdmi_rx_clk_n => tmds_n(3),
+      hdmi_rx_clk_p => tmds_p(3),
+      hdmi_rx_n => tmds_n(2 downto 0),
+      hdmi_rx_p => tmds_p(2 downto 0),
+      hdmi_rx_txen => open,
+      hdmi_rx_scl => '1',
+      
+      hdmi_tx_clk_n => gpdi_dn(3),
+      hdmi_tx_clk_p => gpdi_dp(3),
+      hdmi_tx_n => gpdi_dn(2 downto 0),
+      hdmi_tx_p => gpdi_dp(2 downto 0),
+      hdmi_tx_hpd => '1',
+
+      rs232_tx => ftdi_rxd
     );
 
 end Behavioral;

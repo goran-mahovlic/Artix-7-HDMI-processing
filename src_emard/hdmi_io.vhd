@@ -52,6 +52,11 @@ use UNISIM.VComponents.all;
 entity hdmi_io is
     port (
         clk100        : in STD_LOGIC;
+
+        clk_pixel       : in  std_logic;
+        clk_pixel_shift : in  std_logic;
+        clk_locked      : in  std_logic;
+
         -------------------------------
         -- Control signals
         -------------------------------
@@ -132,50 +137,6 @@ architecture Behavioral of hdmi_io is
            edid_debug : out std_logic_vector(2 downto 0));
     end component;
 
-    component hdmi_input is 
-    port (
-        system_clk      : in  std_logic;
-
-        debug           : out std_logic_vector(5 downto 0);        
-        hdmi_detected : out std_logic;
-        
-        pixel_clk       : out std_logic;  -- Driven by BUFG
-        pixel_io_clk_x1 : out std_logic;  -- Driven by BUFFIO
-        pixel_io_clk_x5 : out std_logic;  -- Driven by BUFFIO
-    
-        -- HDMI input signals
-        hdmi_in_clk   : in    std_logic;
-        hdmi_in_ch0   : in    std_logic;
-        hdmi_in_ch1   : in    std_logic;
-        hdmi_in_ch2   : in    std_logic;
-    
-        -- Status
-        pll_locked   : out std_logic;
-        symbol_sync  : out std_logic;
-    
-        -- Raw data signals
-        raw_blank : out std_logic;
-        raw_hsync : out std_logic;
-        raw_vsync : out std_logic;
-        raw_ch0   : out std_logic_vector(7 downto 0);
-        raw_ch1   : out std_logic_vector(7 downto 0);
-        raw_ch2   : out std_logic_vector(7 downto 0);
-        -- ADP data
-        adp_data_valid      : out std_logic;
-        adp_header_bit      : out std_logic;
-        adp_frame_bit       : out std_logic;
-        adp_subpacket0_bits : out std_logic_vector(1 downto 0);
-        adp_subpacket1_bits : out std_logic_vector(1 downto 0);
-        adp_subpacket2_bits : out std_logic_vector(1 downto 0);
-        adp_subpacket3_bits : out std_logic_vector(1 downto 0);
-        -- For later reuse
-        symbol_ch0   : out std_logic_vector(9 downto 0);
-        symbol_ch1   : out std_logic_vector(9 downto 0);
-        symbol_ch2   : out std_logic_vector(9 downto 0)
-        
-    );
-    end component;
-    
     -----------------------------------------------------
     -- This is a half-baked solution to extracting data
     -- from ADP packets - just pipe the data thorugh and 
@@ -365,20 +326,19 @@ i_edid_rom: edid_rom  port map (
     ---------------------
     -- Input buffers
     ---------------------
-in_clk_buf: IBUFDS generic map ( IOSTANDARD => "TMDS_33")
- port map ( I  => hdmi_rx_clk_p, IB => hdmi_rx_clk_n, O => tmds_in_clk);
- 
-in_rx0_buf: IBUFDS generic map ( IOSTANDARD => "TMDS_33")
- port map ( I  => hdmi_rx_p(0),  IB => hdmi_rx_n(0),  O  => tmds_in_ch0);
+    
+    tmds_in_clk <= hdmi_rx_clk_p;
+    tmds_in_ch0 <= hdmi_rx_p(0);
+    tmds_in_ch1 <= hdmi_rx_p(1);
+    tmds_in_ch2 <= hdmi_rx_p(2);
 
-in_rx1_buf: IBUFDS generic map ( IOSTANDARD => "TMDS_33")
- port map ( I  => hdmi_rx_p(1),  IB => hdmi_rx_n(1),  O  => tmds_in_ch1);
-
-in_rx2_buf: IBUFDS generic map ( IOSTANDARD => "TMDS_33")
- port map ( I  => hdmi_rx_p(2),  IB => hdmi_rx_n(2),  O  => tmds_in_ch2);
-
-i_hdmi_input : hdmi_input port map (
+i_hdmi_input : entity work.hdmi_input port map (
         system_clk      => clk100,
+        clk_pixel       => clk_pixel,
+        clk_pixel_x1    => clk_pixel,
+        clk_pixel_x5    => clk_pixel_shift,
+        locked          => clk_locked,
+
         debug           => open,
         -- Pixel and serializer clocks 
         pixel_clk       => pixel_clk_i,
@@ -556,18 +516,15 @@ i_DVID_output: DVID_output port map (
     -----------------
     -- Output buffers
     -----------------
-out_clk_buf: OBUFDS generic map ( IOSTANDARD => "TMDS_33",  SLEW => "FAST")
-    port map ( O  => hdmi_tx_clk_p, OB => hdmi_tx_clk_n, I => tmds_out_clk);
+    hdmi_tx_clk_p <= tmds_out_clk;
+    hdmi_tx_clk_n <= not tmds_out_clk;
+    hdmi_tx_p(0) <= tmds_out_ch0;
+    hdmi_tx_n(0) <= not tmds_out_ch0;
+    hdmi_tx_p(1) <= tmds_out_ch1;
+    hdmi_tx_n(1) <= not tmds_out_ch1;
+    hdmi_tx_p(2) <= tmds_out_ch2;
+    hdmi_tx_n(2) <= not tmds_out_ch2;
     
-out_tx0_buf: OBUFDS generic map ( IOSTANDARD => "TMDS_33",  SLEW => "FAST")
-    port map ( O  => hdmi_tx_p(0), OB => hdmi_tx_n(0), I  => tmds_out_ch0);
-
-out_tx1_buf: OBUFDS generic map ( IOSTANDARD => "TMDS_33",  SLEW => "FAST")
-    port map ( O  => hdmi_tx_p(1), OB => hdmi_tx_n(1), I  => tmds_out_ch1);
-
-out_tx2_buf: OBUFDS generic map ( IOSTANDARD => "TMDS_33",  SLEW => "FAST")
-    port map ( O  => hdmi_tx_p(2), OB => hdmi_tx_n(2), I  => tmds_out_ch2);
-
     -- Detect when VSYNC is held high for 8 cycles, so we can synchronise the capture of symbols 
 process(pixel_clk_i)
     begin

@@ -71,6 +71,7 @@ VHDL_FILES = \
   ../../../../src_emard/serialiser_10_to_1.vhd \
   ../../../../src_emard/deserialiser_1_to_10.vhd \
   ../../../../src_emard/hdmi_input.vhd \
+  ../../../../src_emard/hdmi_io.vhd \
   ../../../../src_emard/hdmi_design.vhd
 
 SCRIPTS = ../scripts
