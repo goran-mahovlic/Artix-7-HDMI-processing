@@ -70,20 +70,6 @@ entity input_channel is
 end input_channel;
 
 architecture Behavioral of input_channel is
---    component deserialiser_1_to_10 is
---    Port (
---           delay_ce    : in std_logic;
---           delay_count : in std_logic_vector (4 downto 0);
---           ce          : in  STD_LOGIC;
---           clk         : in std_logic;
---           clk_x1      : in std_logic;
---           bitslip     : in std_logic;
---           clk_x5      : in std_logic;
---           reset       : in std_logic;
---           serial      : in std_logic;
---           data        : out std_logic_vector (9 downto 0));
---    end component;
-
     component TMDS_decoder is
     Port ( clk             : in  std_logic;
            symbol          : in  std_logic_vector (9 downto 0);

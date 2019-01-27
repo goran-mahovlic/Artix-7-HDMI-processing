@@ -57,28 +57,6 @@ entity hdmi_input is
 end hdmi_input;
 
 architecture Behavioral of hdmi_input is
-
-    component input_channel is
-    Port ( clk_mgmt        : in STD_LOGIC;
-           clk             : in  STD_LOGIC;
-           clk_x1          : in  STD_LOGIC;
-           clk_x5          : in  STD_LOGIC;
-           serial          : in  STD_LOGIC;
-           reset           : in  STD_LOGIC;
-           ce              : in  STD_LOGIC;
-           invalid_symbol  : out std_logic;
-           symbol          : out std_logic_vector (9 downto 0);
-           ctl_valid       : out std_logic;
-           ctl             : out std_logic_vector (1 downto 0);
-           terc4_valid     : out std_logic;
-           terc4           : out std_logic_vector (3 downto 0);
-           guardband_valid : out std_logic;
-           guardband       : out std_logic_vector (0 downto 0);
-           data_valid      : out std_logic;
-           data            : out std_logic_vector (7 downto 0);
-           symbol_sync     : out STD_LOGIC);
-    end component;
-    
     signal clk_pixel_raw     : std_logic;
     
     component alignment_detect is
@@ -211,7 +189,7 @@ begin
     pixel_io_clk_x1 <= clk_pixel_x1;
     pixel_io_clk_x5 <= clk_pixel_x5;
 
-ch0: input_channel Port map ( 
+ch0: entity work.input_channel Port map ( 
         clk             => clk_pixel,
         ce              => ser_ce,
         clk_x1          => clk_pixel_x1,
@@ -230,8 +208,7 @@ ch0: input_channel Port map (
         reset           => ser_reset,
         symbol_sync     => ch0_symbol_sync);
 
-ch1: input_channel Port map ( 
-        clk_mgmt        => system_clk,
+ch1: entity work.input_channel Port map ( 
         clk             => clk_pixel,
         ce              => ser_ce,
         clk_x1          => clk_pixel_x1,
@@ -250,8 +227,7 @@ ch1: input_channel Port map (
         reset           => ser_reset,
         symbol_sync     => ch1_symbol_sync);
 
-ch2: input_channel Port map ( 
-        clk_mgmt        => system_clk,
+ch2: entity work.input_channel Port map ( 
         clk             => clk_pixel,
         ce              => ser_ce,
         clk_x1          => clk_pixel_x1,

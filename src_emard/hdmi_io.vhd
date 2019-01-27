@@ -313,7 +313,8 @@ begin
     debug(6)          <= raw_vsync;
     debug(5)          <= is_second_field_i;  
     debug(4)          <= is_interlaced_i;      
-    debug(3 downto 1) <= (others => '0');
+    debug(2)          <= data_synced;
+    debug(1)          <= clock_locked;
     debug(0)          <= in_hdmi_detected;
 
 i_edid_rom: edid_rom  port map (
