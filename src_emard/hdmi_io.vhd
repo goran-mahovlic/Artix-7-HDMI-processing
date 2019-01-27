@@ -46,8 +46,6 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-library UNISIM;
-use UNISIM.VComponents.all;
 
 entity hdmi_io is
     port (
@@ -315,7 +313,8 @@ begin
     debug(6)          <= raw_vsync;
     debug(5)          <= is_second_field_i;  
     debug(4)          <= is_interlaced_i;      
-    debug(3 downto 0) <= (others => '0');
+    debug(3 downto 1) <= (others => '0');
+    debug(0)          <= in_hdmi_detected;
 
 i_edid_rom: edid_rom  port map (
              clk      => clk100,

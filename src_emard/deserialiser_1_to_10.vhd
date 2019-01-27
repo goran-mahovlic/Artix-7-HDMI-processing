@@ -4,7 +4,8 @@ library IEEE;
 use IEEE.std_logic_1164.ALL;
 
 entity deserialiser_1_to_10 is
-    Port ( clk_mgmt    : in  std_logic; -- unused
+    Port
+    (
            delay_ce    : in  std_logic;
            delay_count : in  std_logic_vector (4 downto 0); -- sub-bit delay
            

@@ -204,17 +204,14 @@ begin
     symbol_ch0  <= ch0_symbol;
     symbol_ch1  <= ch1_symbol;
     symbol_ch2  <= ch2_symbol;
-
     
     debug       <= ch2_invalid_symbol & ch1_invalid_symbol & ch0_invalid_symbol & dvid_mode & locked & symbol_sync_i;         
 
-
-      pixel_clk       <= clk_pixel;
-      pixel_io_clk_x1 <= clk_pixel_x1;
-      pixel_io_clk_x5 <= clk_pixel_x5;
+    pixel_clk       <= clk_pixel;
+    pixel_io_clk_x1 <= clk_pixel_x1;
+    pixel_io_clk_x5 <= clk_pixel_x5;
 
 ch0: input_channel Port map ( 
-        clk_mgmt        => system_clk,
         clk             => clk_pixel,
         ce              => ser_ce,
         clk_x1          => clk_pixel_x1,
@@ -388,7 +385,7 @@ hdmi_section_decode: process(clk_pixel)
             end if;
             -----------------------------------------
             -- See if we can detect the VDP guardband
-            -- This is pretty nices as the guard
+            -- This is pretty nice as the guard
             -----------------------------------------
             vdp_guardband_detect <= '0';                        
             if ch0_guardband_valid = '1' and ch1_guardband_valid = '1' and ch2_guardband_valid = '1' then

@@ -237,10 +237,10 @@ begin
     led        <= debug;
     
 i_hdmi_io: entity work.hdmi_io port map ( 
-        clk100        => clk100,
-        clk_pixel     => clk_pixel,
-        clk_pixel_shift => clk_pixel_shift,
-        clk_locked => clk_locked,
+        clk100           => clk100,
+        clk_pixel        => clk_pixel,
+        clk_pixel_shift  => clk_pixel_shift,
+        clk_locked       => clk_locked,
         ---------------------
         -- Control signals
         ---------------------
@@ -271,7 +271,6 @@ i_hdmi_io: entity work.hdmi_io port map (
         hdmi_tx_rsda  => hdmi_tx_rsda,
         hdmi_tx_p     => hdmi_tx_p,
         hdmi_tx_n     => hdmi_tx_n,     
-
         
         pixel_clk => pixel_clk,
         -------------------------------
