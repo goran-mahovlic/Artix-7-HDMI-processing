@@ -50,7 +50,7 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity deserialiser_1_to_10 is
-    Port ( clk_mgmt    : in  std_logic;
+    Port (
            delay_ce    : in  std_logic;
            delay_count : in  std_logic_vector (4 downto 0);
            
