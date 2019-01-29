@@ -70,36 +70,12 @@ entity input_channel is
 end input_channel;
 
 architecture Behavioral of input_channel is
-    component TMDS_decoder is
-    Port ( clk             : in  std_logic;
-           symbol          : in  std_logic_vector (9 downto 0);
-           invalid_symbol  : out std_logic;
-           ctl_valid       : out std_logic;
-           ctl             : out std_logic_vector (1 downto 0);
-           terc4_valid     : out std_logic;
-           terc4           : out std_logic_vector (3 downto 0);
-           guardband_valid : out std_logic;
-           guardband       : out std_logic_vector (0 downto 0);
-           data_valid      : out std_logic;
-           data            : out std_logic_vector (7 downto 0));
-    end component;
-    
-    component alignment_detect is
-        Port ( clk            : in STD_LOGIC;
-               invalid_symbol : in STD_LOGIC;
-               delay_count    : out STD_LOGIC_VECTOR(4 downto 0);
-               delay_ce       : out STD_LOGIC;
-               bitslip        : out STD_LOGIC;
-               symbol_sync    : out STD_LOGIC);
-    end component;
-
     signal delay_count     : std_logic_vector (4 downto 0);
     signal delay_ce        : STD_LOGIC;
     signal bitslip         : STD_LOGIC;
     signal symbol_sync_i   : STD_LOGIC;
     signal symbol_i        : std_logic_vector (9 downto 0);
     signal invalid_symbol_i: STD_LOGIC;
-
 begin
     symbol <= symbol_i;
 
@@ -115,7 +91,7 @@ i_deser: entity work.deserialiser_1_to_10 port map (
         serial      => serial,
         data        => symbol_i);
 
-i_decoder: tmds_decoder port map (
+i_decoder: entity work.tmds_decoder port map (
         clk             => clk,
         symbol          => symbol_i,
         invalid_symbol  => invalid_symbol_i,
@@ -131,7 +107,7 @@ i_decoder: tmds_decoder port map (
     
     invalid_symbol <= invalid_symbol_i;
      
-i_alignment_detect: alignment_detect port map (
+i_alignment_detect: entity work.alignment_detect port map (
            clk            => clk,
            invalid_symbol => invalid_symbol_i,
            delay_count    => delay_count,
