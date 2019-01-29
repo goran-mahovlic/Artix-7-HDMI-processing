@@ -59,7 +59,16 @@ entity hdmi_design is
         -- Control signals
         led           : out   std_logic_vector(7 downto 0) :=(others => '0');
         sw            : in    std_logic_vector(7 downto 0) :=(others => '0');
+        btn           : in    std_logic_vector(6 downto 0) :=(others => '0');
         debug_pmod    : out   std_logic_vector(7 downto 0) :=(others => '0');
+
+        --input  test picture signal to bypass HDMI during btn(1) press
+        test_blank    : std_logic;
+        test_hsync    : std_logic;
+        test_vsync    : std_logic;
+        test_red      : std_logic_vector(7 downto 0);
+        test_green    : std_logic_vector(7 downto 0);
+        test_blue     : std_logic_vector(7 downto 0);
 
         --HDMI input signals
         hdmi_rx_cec   : inout std_logic;
@@ -212,6 +221,7 @@ architecture Behavioral of hdmi_design is
     end component;
 
     signal pixel_clk : std_logic;
+
     signal in_blank  : std_logic;
     signal in_hsync  : std_logic;
     signal in_vsync  : std_logic;
@@ -220,6 +230,16 @@ architecture Behavioral of hdmi_design is
     signal in_blue   : std_logic_vector(7 downto 0);
     signal is_interlaced   : std_logic;
     signal is_second_field : std_logic;
+    -- switched between internal VGA test picture and recovered input picture
+    signal sw_blank  : std_logic;
+    signal sw_hsync  : std_logic;
+    signal sw_vsync  : std_logic;
+    signal sw_red    : std_logic_vector(7 downto 0);
+    signal sw_green  : std_logic_vector(7 downto 0);
+    signal sw_blue   : std_logic_vector(7 downto 0);
+    signal sw_interlaced   : std_logic;
+    signal sw_second_field : std_logic;
+
     signal out_blank : std_logic;
     signal out_hsync : std_logic;
     signal out_vsync : std_logic;
@@ -308,20 +328,46 @@ i_hdmi_io: entity work.hdmi_io port map (
         symbol_ch2   => symbol_ch2
     );
     
+-- switched test or input picture
+process(pixel_clk)
+begin
+  if rising_edge(pixel_clk) then
+    if btn(1) = '1' then
+        sw_blank <= test_blank;
+        sw_hsync <= test_hsync;
+        sw_vsync <= test_vsync;
+        sw_red   <= test_red;
+        sw_green <= test_green;
+        sw_blue  <= test_blue;
+        sw_interlaced   <= '0';
+        sw_second_field <= '0';
+    else
+        sw_blank <= in_blank;
+        sw_hsync <= in_hsync;
+        sw_vsync <= in_vsync;
+        sw_red   <= in_red;
+        sw_green <= in_green;
+        sw_blue  <= in_blue;
+        sw_interlaced   <= is_interlaced;
+        sw_second_field <= is_second_field;
+    end if;
+  end if;
+end process;
+    
 i_processing: pixel_processing Port map ( 
         clk => pixel_clk,
         switches => sw,
         ------------------
         -- Incoming pixels
         ------------------
-        in_blank        => in_blank,
-        in_hsync        => in_hsync,
-        in_vsync        => in_vsync,
-        in_red          => in_red,
-        in_green        => in_green,
-        in_blue         => in_blue,    
-        is_interlaced   => is_interlaced,
-        is_second_field => is_second_field,
+        in_blank        => sw_blank,
+        in_hsync        => sw_hsync,
+        in_vsync        => sw_vsync,
+        in_red          => sw_red,
+        in_green        => sw_green,
+        in_blue         => sw_blue,    
+        is_interlaced   => sw_interlaced,
+        is_second_field => sw_second_field,
         audio_channel   => audio_channel,
         audio_de        => audio_de,
         audio_sample    => audio_sample,

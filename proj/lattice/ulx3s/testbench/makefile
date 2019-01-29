@@ -2,7 +2,7 @@
 PROJECT = dvicapture
 BOARD = ulx3s
 # 12 25 45 85
-FPGA_SIZE = 25
+FPGA_SIZE = 12
 
 FPGA_PACKAGE = 6bg381c
 # config flash: 1:SPI (standard), 4:QSPI (quad)
@@ -25,6 +25,10 @@ CLK0_OPTIONS = \
   --clkout1=125 \
   --clkout2=25 \
   --clkout3=100
+
+#  --dynamic \
+#  --reset \
+#  --standby
 
 CLK1_NAME = clk_video_v
 CLK1_FILE_NAME = clocks/$(CLK1_NAME).v

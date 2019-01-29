@@ -63,6 +63,8 @@ architecture Behavioral of top_testbench is
     signal clk_pixel, clk_shift: std_logic;
     signal debug, blink : std_logic_vector(7 downto 0);
     signal reset: std_logic;
+    signal test_blank, test_hsync, test_vsync: std_logic;
+    signal test_red, test_green, test_blue: std_logic_vector(7 downto 0);
     signal tmds_p, tmds_n: std_logic_vector(3 downto 0);
 begin
     led <= debug;
@@ -89,6 +91,12 @@ begin
     (
       clk_pixel => clk_25,
       clk_shift => clk_250,
+      out_blank => test_blank,
+      out_hsync => test_hsync,
+      out_vsync => test_vsync,
+      out_red   => test_red,
+      out_green => test_green,
+      out_blue  => test_blue,
       out_p => tmds_p,
       out_n => tmds_n
     );
@@ -127,7 +135,15 @@ begin
 
       led        => debug,
       sw         => "00000000",
+      btn        => btn,
       debug_pmod => open,
+      
+      test_blank => test_blank,
+      test_hsync => test_hsync,
+      test_vsync => test_vsync,
+      test_red   => test_red,
+      test_green => test_green,
+      test_blue  => test_blue,
       
       hdmi_rx_clk_n => tmds_n(3),
       hdmi_rx_clk_p => tmds_p(3),

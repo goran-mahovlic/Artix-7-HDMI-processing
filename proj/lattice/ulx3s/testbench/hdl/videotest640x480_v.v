@@ -2,7 +2,9 @@ module videotest640x480_v
 (
   input clk_pixel, //  25 MHz
   input clk_shift, // 250 MHz
-  output [3:0] out_p, out_n
+  output reg [7:0] out_red, out_green, out_blue, // VGA test picture, pixel data
+  output reg out_hsync, out_vsync, out_blank, // VGA test picture, signaling
+  output [3:0] out_p, out_n // VGA test picture, TMDS encoded
 );
     parameter C_ddr = 1'b0; // 0:SDR 1:DDR
 
@@ -21,6 +23,16 @@ module videotest640x480_v
       .vga_vsync(vga_vsync),
       .vga_blank(vga_blank)
     );
+    
+    always @(posedge clk_pixel)
+    begin
+      out_hsync <= vga_hsync;
+      out_vsync <= vga_vsync;
+      out_blank <= vga_blank;
+      out_red   <= vga_r;
+      out_green <= vga_g;
+      out_blue  <= vga_b;
+    end
 
     // VGA to digital video converter
     wire [1:0] tmds[3:0];

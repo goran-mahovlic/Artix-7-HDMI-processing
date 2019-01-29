@@ -4,9 +4,6 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-library UNISIM;
-use UNISIM.VComponents.all;
-
 entity hdmi_input is
     Port (
         system_clk      : in  std_logic;
