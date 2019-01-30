@@ -128,13 +128,6 @@ entity hdmi_io is
 end entity;
 
 architecture Behavioral of hdmi_io is
-    component edid_rom is
-    port ( clk      : in    std_logic;
-           sclk_raw : in    std_logic;
-           sdat_raw : inout std_logic;
-           edid_debug : out std_logic_vector(2 downto 0));
-    end component;
-
     -----------------------------------------------------
     -- This is a half-baked solution to extracting data
     -- from ADP packets - just pipe the data thorugh and 
@@ -317,7 +310,8 @@ begin
     debug(1)          <= clock_locked;
     debug(0)          <= in_hdmi_detected;
 
-i_edid_rom: edid_rom  port map (
+i_edid_rom: entity work.edid_rom
+    port map (
              clk      => clk100,
              sclk_raw => hdmi_rx_scl,
              sdat_raw => hdmi_rx_sda,

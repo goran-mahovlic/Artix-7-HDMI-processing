@@ -119,7 +119,7 @@ decode_ctl:  process(clk)
                 -- Decode TERC4 data
                 -------------------------
                 case lookup(7 downto 0) is 
-                    when x"5B"  => terc4_valid <= '1'; terc4 <= "0000";-- "1010011100" TERC4 0000
+                    when x"5B"  => terc4_valid <= '1'; terc4 <= "0000"; -- "1010011100" TERC4 0000
                     when x"5A"  => terc4_valid <= '1'; terc4 <= "0001"; -- "1001100011" TERC4 0001
                     when x"D3"  => terc4_valid <= '1'; terc4 <= "0010"; -- "1011100100" TERC4 0010
                     when x"D9"  => terc4_valid <= '1'; terc4 <= "0011"; -- "1011100010" TERC4 0011
@@ -883,10 +883,10 @@ decode_ctl:  process(clk)
                 when "1000000000" => lookup <= "111111111";
                 
                 -- DVI-D CTL symbols        
+                when "1101010100" => lookup <= "01" & "00000" &  "00";  -- CTL0
                 when "0010101011" => lookup <= "01" & "00000" &  "01";  -- CTL1
                 when "0101010100" => lookup <= "01" & "00000" &  "10";  -- CTL2
                 when "1010101011" => lookup <= "01" & "00000" &  "11";  -- CTL3
-                when "1101010100" => lookup <= "01" & "00000" &  "00";  -- CTL0
                 
                 -- Invalid symbols
                 when others       => lookup <= "0000" & "00000"; 
