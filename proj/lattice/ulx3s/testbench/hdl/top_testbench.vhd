@@ -58,7 +58,8 @@ Port
 end;
 
 architecture Behavioral of top_testbench is
-    signal clk_100, locked : std_logic;
+    constant C_internal_pll: boolean := false;
+    signal clk_100, locked, locked1 : std_logic;
     signal clk_250, clk_125, clk_25: std_logic; -- to video generator
     signal clk_pixel, clk_shift: std_logic;
     signal debug, blink : std_logic_vector(7 downto 0);
@@ -82,7 +83,7 @@ begin
       clkout(1) => clk_125,
       clkout(2) => clk_25,
       clkout(3) => clk_100,
-      locked => open
+      locked => locked1
     );
     
     -- video generator
@@ -106,6 +107,7 @@ begin
     --gpdi_dn <= tmds_n;
     
     -- clock recovery PLL
+    g_yes_internal_pll: if C_internal_pll generate
     clk_video_inst: entity work.clk_video
     port map
     (
@@ -114,6 +116,13 @@ begin
       clkout(2) => clk_pixel,
       locked => locked
     );
+    end generate;
+
+    g_not_internal_pll: if not C_internal_pll generate
+    clk_pixel <= clk_25;
+    clk_shift <= clk_250;
+    locked <= locked1;
+    end generate;
 
     blink_inst: entity work.blink
     port map
