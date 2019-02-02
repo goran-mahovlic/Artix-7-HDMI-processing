@@ -80,7 +80,7 @@ entity pixel_processing is
             ----------------------------------
             -- Controls
             ----------------------------------   
-            switches : in std_logic_vector(7 downto 0)
+            switches : in std_logic_vector(1 downto 0)
     );
 end pixel_processing;
 
@@ -279,3 +279,4 @@ i_guidelines: guidelines Port map (
     );
 
  end Behavioral;
+ 
