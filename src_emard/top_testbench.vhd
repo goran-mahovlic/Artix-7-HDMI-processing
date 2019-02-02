@@ -58,7 +58,7 @@ Port
 end;
 
 architecture Behavioral of top_testbench is
-    constant C_internal_pll: boolean := false;
+    constant C_internal_pll: boolean := true;
     constant C_hamsterz: boolean := false;
     signal clk_100, locked, locked1 : std_logic;
     signal clk_250, clk_125, clk_25: std_logic; -- to video generator
@@ -182,15 +182,27 @@ begin
     end generate;
 
     g_not_hamsterz: if not C_hamsterz generate
-    -- TODO: deserialize tmds_p, tmds_n to parallel 10-bit
+    -- deserialize tmds_p to parallel 10-bit
+    -- clk_pixel and clk_shift must be phase aligned with tmds_p(3) clock
+    tmds_deserializer_inst: entity work.tmds_deserializer
+    port map
+    (
+      clk_pixel => clk_pixel,
+      clk_shift => clk_shift,
+      tmds_p => tmds_p,
+      outp_red => des_red,
+      outp_green => des_green,
+      outp_blue => des_blue
+    );
+    -- debug <= outp_blue(7 downto 0);
     -- parallel 10-bit TMDS to 8-bit RGB VGA converter
     dvi2vga_inst: entity work.dvi2vga
     port map
     (
       clk => clk_pixel,
-      dvi_red => outp_red,
-      dvi_green => outp_green,
-      dvi_blue => outp_blue,
+      dvi_red => des_red,
+      dvi_green => des_green,
+      dvi_blue => des_blue, -- outp_blue for debugging
       vga_red => vga_red,
       vga_green => vga_green,
       vga_blue => vga_blue,
