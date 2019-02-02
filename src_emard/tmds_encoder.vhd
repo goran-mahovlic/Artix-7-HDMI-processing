@@ -53,7 +53,7 @@ architecture Behavioral of tmds_encoder is
    signal data_word_disparity : STD_LOGIC_VECTOR (3 downto 0);
    signal dc_bias             : STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
 begin
-   -- Work our the two different encodings for the byte
+   -- Work out the two different encodings for the byte
    xored(0) <= data(0);
    xored(1) <= data(1) xor xored(0);
    xored(2) <= data(2) xor xored(1);
