@@ -39,7 +39,6 @@ begin
     begin
       if rising_edge(clk_x5) then
         if bitslip = '0' then
-          -- R_shift <= R_shift(R_shift'high-1 downto 0) & delayed;
           R_shift <= delayed & R_shift(R_shift'high downto 1);
         end if;
         if R_clock(5 downto 4) = C_shift_clock_initial(5 downto 4) then
