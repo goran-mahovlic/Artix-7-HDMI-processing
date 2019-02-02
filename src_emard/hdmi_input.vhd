@@ -158,7 +158,7 @@ architecture Behavioral of hdmi_input is
     signal adp_guardband_detect : std_logic := '0'; 
     signal adp_prefix_seen      : std_logic := '0';
     signal in_adp               : std_logic := '0';
-    signal dvid_mode            : std_logic := '0';
+    signal dvid_mode            : std_logic := '1';
     signal last_was_ctl         : std_logic := '0';
     
     signal in_dvid              : std_logic := '0';
@@ -171,7 +171,7 @@ begin
     symbol_ch1  <= ch1_symbol;
     symbol_ch2  <= ch2_symbol;
     
-    debug       <= ch2_invalid_symbol & ch1_invalid_symbol & ch0_invalid_symbol & dvid_mode & locked & symbol_sync_i;         
+    debug       <= ch2_invalid_symbol & ch1_invalid_symbol & ch0_invalid_symbol & dvid_mode & locked & symbol_sync_i;
 
     pixel_clk       <= clk_pixel;
     pixel_io_clk_x1 <= clk_pixel_x1;
