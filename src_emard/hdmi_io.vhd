@@ -294,7 +294,7 @@ architecture Behavioral of hdmi_io is
     signal tmds_out_ch0 : std_logic;
     signal tmds_out_ch1 : std_logic;
     signal tmds_out_ch2 : std_logic;
-
+    
     signal detect_sr : std_logic_vector(7 downto 0) := (others => '0');
 begin
     pixel_clk <= pixel_clk_i;
@@ -304,11 +304,11 @@ begin
 
     debug(7)          <= raw_hsync;
     debug(6)          <= raw_vsync;
-    debug(5)          <= is_second_field_i;  
-    debug(4)          <= is_interlaced_i;      
-    debug(2)          <= data_synced;
-    debug(1)          <= clock_locked;
-    debug(0)          <= in_hdmi_detected;
+--    debug(5)          <= is_second_field_i;  
+--    debug(4)          <= is_interlaced_i;      
+--    debug(2)          <= data_synced;
+--    debug(1)          <= clock_locked;
+--    debug(0)          <= in_hdmi_detected;
 
 i_edid_rom: entity work.edid_rom
     port map (
@@ -333,7 +333,7 @@ i_hdmi_input : entity work.hdmi_input port map (
         clk_pixel_x5    => clk_pixel_shift,
         locked          => clk_locked,
 
-        debug           => open,
+        debug           => debug(5 downto 0),
         -- Pixel and serializer clocks 
         pixel_clk       => pixel_clk_i,
         pixel_io_clk_x1 => pixel_io_clk_x1,
