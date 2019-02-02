@@ -6,8 +6,8 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity deserialiser_1_to_10 is
-    Port
-    (
+Port
+(
            delay_ce    : in  std_logic;
            delay_count : in  std_logic_vector (4 downto 0); -- sub-bit delay
            
@@ -19,12 +19,11 @@ entity deserialiser_1_to_10 is
            serial      : in  std_logic; -- input serial data
            reset       : in  std_logic;
            data        : out std_logic_vector (9 downto 0) -- output data
-    );
+);
 end deserialiser_1_to_10;
 
 architecture Behavioral of deserialiser_1_to_10 is
-    signal delayed : std_logic := '0';
-    signal clkb    : std_logic := '1';
+    constant C_latch_phase: integer := -2; -- default -2 (positive: later, negative: earlier)
     signal R_shift, R_latch, R_data : std_logic_vector(9 downto 0);
     constant C_shift_clock_initial: std_logic_vector(9 downto 0) := "0000011111";
     signal R_clock : std_logic_vector(9 downto 0) := C_shift_clock_initial;
@@ -33,21 +32,20 @@ architecture Behavioral of deserialiser_1_to_10 is
     signal R_sync_fail: std_logic_vector(6 downto 0); -- counts sync fails, after too many, reinitialize shift_clock
 begin
     -- TODO implement fine-grained delay using "delay_count"
-    delayed <= serial;
 
     process(clk_x5)
     begin
       if rising_edge(clk_x5) then
         if bitslip = '0' then
-          R_shift <= delayed & R_shift(R_shift'high downto 1);
+          R_shift <= serial & R_shift(R_shift'high downto 1);
         end if;
-        if R_clock(5 downto 4) = C_shift_clock_initial(5 downto 4) then
+        if R_clock(5+C_latch_phase downto 4+C_latch_phase) = C_shift_clock_initial(5 downto 4) then
           R_latch <= R_shift;
         end if;
       end if;
     end process;
 
-	-- every N cycles of clk_shift: signal to skip 1 cycle in order to get in sync
+    -- every N cycles of clk_shift: signal to skip 1 cycle in order to get in sync
     process(clk_x5)
     begin
 		if rising_edge(clk_x5) then
