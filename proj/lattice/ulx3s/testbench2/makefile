@@ -75,6 +75,7 @@ VHDL_FILES = \
   ../../../../src_emard/dvi2vga.vhd \
   ../../../../src_emard/serialiser_10_to_1.vhd \
   ../../../../src_emard/deserialiser_1_to_10.vhd \
+  ../../../../src_emard/tmds_deserializer.vhd \
   ../../../../src_emard/tmds_dekoder.vhd \
   ../../../../src_emard/hdmi_input.vhd \
   ../../../../src_emard/hdmi_io.vhd \
