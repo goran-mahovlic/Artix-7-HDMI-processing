@@ -241,7 +241,7 @@ end process;
 
 i_processing: entity work.pixel_processing Port map ( 
         clk => pixel_clk,
-        switches => sw,
+        switches => btn(6 downto 5),
         ------------------
         -- Incoming pixels
         ------------------
