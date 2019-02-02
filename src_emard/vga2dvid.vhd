@@ -73,6 +73,7 @@ entity vga2dvid is
 end vga2dvid;
 
 architecture Behavioral of vga2dvid is
+        constant C_shift_clock_phase: integer := 0;
 	signal encoded_red, encoded_green, encoded_blue : std_logic_vector(9 downto 0);
 	signal latched_red, latched_green, latched_blue : std_logic_vector(9 downto 0) := (others => '0');
 	signal shift_red, shift_green, shift_blue	: std_logic_vector(9 downto 0) := (others => '0');
@@ -110,7 +111,7 @@ begin
 		if rising_edge(clk_pixel) then
 			-- does 0 to 1 transition at bits 5 downto 4 happen at rising_edge of clk_pixel?
 			-- if shift_clock = C_shift_clock_initial then
-			if shift_clock(5 downto 4) = C_shift_clock_initial(5 downto 4) then -- same as above line but simplified 
+			if shift_clock(5+C_shift_clock_phase downto 4+C_shift_clock_phase) = C_shift_clock_initial(5 downto 4) then -- same as above line but simplified
 				R_shift_clock_off_sync <= '0';
 			else
 				R_shift_clock_off_sync <= '1';
