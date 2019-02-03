@@ -16,17 +16,6 @@ Port
         
   wifi_gpio0: out  std_logic;
 
-        --HDMI input signals
-        --hdmi_rx_cec   : inout std_logic;
-        --hdmi_rx_hpa   : out   std_logic;
-        --hdmi_rx_scl   : in    std_logic;
-        --hdmi_rx_sda   : inout std_logic;
-        --hdmi_rx_txen  : out   std_logic;
-        --hdmi_rx_clk_n : in    std_logic;
-        --hdmi_rx_clk_p : in    std_logic;
-        --hdmi_rx_n     : in    std_logic_vector(2 downto 0);
-        --hdmi_rx_p     : in    std_logic_vector(2 downto 0);
-
   -- Digital Video monitor output
   -- picture to be analyzed will be displayed here
   gpdi_dp, gpdi_dn: out std_logic_vector(3 downto 0);
@@ -42,24 +31,14 @@ Port
   gpdi_sda: inout std_logic;
 
   gp, gn: inout std_logic_vector(27 downto 0);
-  
-        --- HDMI out
-        --hdmi_tx_cec   : inout std_logic;
-        --hdmi_tx_clk_n : out   std_logic;
-        --hdmi_tx_clk_p : out   std_logic;
-        --hdmi_tx_hpd   : in    std_logic;
-        --hdmi_tx_rscl  : inout std_logic;
-        --hdmi_tx_rsda  : inout std_logic;
-        --hdmi_tx_p     : out   std_logic_vector(2 downto 0);
-        --hdmi_tx_n     : out   std_logic_vector(2 downto 0);
-        -- For dumping symbols
+  -- For dumping symbols
   ftdi_rxd : out std_logic      
 );
 end;
 
 architecture Behavioral of top_testbench is
     constant C_internal_pll: boolean := true;
-    constant C_hamsterz: boolean := false;
+    constant C_hamsterz: boolean := true;
     signal clk_100, locked, locked1 : std_logic;
     signal clk_250, clk_125, clk_25: std_logic; -- to video generator
     signal clk_pixel, clk_shift: std_logic;
@@ -202,7 +181,8 @@ begin
       clk => clk_pixel,
       dvi_red => des_red,
       dvi_green => des_green,
-      dvi_blue => des_blue, -- outp_blue for debugging
+      dvi_blue => des_blue,
+      -- dvi_blue => outp_blue, -- original blue contains syncs. monitor should show picture
       vga_red => vga_red,
       vga_green => vga_green,
       vga_blue => vga_blue,
