@@ -171,7 +171,9 @@ begin
     symbol_ch1  <= ch1_symbol;
     symbol_ch2  <= ch2_symbol;
     
-    debug       <= ch2_invalid_symbol & ch1_invalid_symbol & ch0_invalid_symbol & dvid_mode & locked & symbol_sync_i;
+--    debug       <= ch2_invalid_symbol & ch1_invalid_symbol & ch0_invalid_symbol & dvid_mode & locked & symbol_sync_i;
+--    debug <= raw_ch0(5 downto 0);
+    debug <= ch0_data(0) & ch0_ctl_valid & hdmi_detected & raw_ch0(2) & raw_ch0(1) & raw_ch0(0);
 
     pixel_clk       <= clk_pixel;
     pixel_io_clk_x1 <= clk_pixel_x1;

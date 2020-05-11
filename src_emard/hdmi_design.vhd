@@ -84,20 +84,20 @@ entity hdmi_design is
         hdmi_rx_scl   : in    std_logic;
         hdmi_rx_sda   : inout std_logic;
         hdmi_rx_txen  : out   std_logic;
-        hdmi_rx_clk_n : in    std_logic;
+--        hdmi_rx_clk_n : in    std_logic;
         hdmi_rx_clk_p : in    std_logic;
-        hdmi_rx_n     : in    std_logic_vector(2 downto 0);
+--        hdmi_rx_n     : in    std_logic_vector(2 downto 0);
         hdmi_rx_p     : in    std_logic_vector(2 downto 0);
 
         --- HDMI out
         hdmi_tx_cec   : inout std_logic;
-        hdmi_tx_clk_n : out   std_logic;
+--        hdmi_tx_clk_n : out   std_logic;
         hdmi_tx_clk_p : out   std_logic;
         hdmi_tx_hpd   : in    std_logic;
         hdmi_tx_rscl  : inout std_logic;
         hdmi_tx_rsda  : inout std_logic;
         hdmi_tx_p     : out   std_logic_vector(2 downto 0);
-        hdmi_tx_n     : out   std_logic_vector(2 downto 0);
+--        hdmi_tx_n     : out   std_logic_vector(2 downto 0);
         -- For dumping symbols
         rs232_tx     : out std_logic      
     );
@@ -180,22 +180,22 @@ i_hdmi_io: entity work.hdmi_io port map (
         hdmi_rx_scl   => hdmi_rx_scl,
         hdmi_rx_sda   => hdmi_rx_sda,
         hdmi_rx_txen  => hdmi_rx_txen,
-        hdmi_rx_clk_n => hdmi_rx_clk_n,
+--        hdmi_rx_clk_n => hdmi_rx_clk_n,
         hdmi_rx_clk_p => hdmi_rx_clk_p,
         hdmi_rx_p     => hdmi_rx_p,
-        hdmi_rx_n     => hdmi_rx_n,
+--        hdmi_rx_n     => hdmi_rx_n,
 
         ----------------------
         -- HDMI output signals
         ----------------------
         hdmi_tx_cec   => hdmi_tx_cec,
-        hdmi_tx_clk_n => hdmi_tx_clk_n,
+--        hdmi_tx_clk_n => hdmi_tx_clk_n,
         hdmi_tx_clk_p => hdmi_tx_clk_p,
         hdmi_tx_hpd   => hdmi_tx_hpd,
         hdmi_tx_rscl  => hdmi_tx_rscl,
         hdmi_tx_rsda  => hdmi_tx_rsda,
         hdmi_tx_p     => hdmi_tx_p,
-        hdmi_tx_n     => hdmi_tx_n,     
+--        hdmi_tx_n     => hdmi_tx_n,     
         
         pixel_clk => pixel_clk,
         -------------------------------

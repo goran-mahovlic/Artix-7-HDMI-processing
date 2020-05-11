@@ -70,22 +70,22 @@ entity hdmi_io is
         hdmi_rx_scl   : in    std_logic;
         hdmi_rx_sda   : inout std_logic;
         hdmi_rx_txen  : out   std_logic;
-        hdmi_rx_clk_n : in    std_logic;
+--        hdmi_rx_clk_n : in    std_logic;
         hdmi_rx_clk_p : in    std_logic;
-        hdmi_rx_n     : in    std_logic_vector(2 downto 0);
+ --       hdmi_rx_n     : in    std_logic_vector(2 downto 0);
         hdmi_rx_p     : in    std_logic_vector(2 downto 0);
         
         -------------
         -- HDMI out
         -------------
         hdmi_tx_cec   : inout std_logic;
-        hdmi_tx_clk_n : out   std_logic;
+--        hdmi_tx_clk_n : out   std_logic;
         hdmi_tx_clk_p : out   std_logic;
         hdmi_tx_hpd   : in    std_logic;
         hdmi_tx_rscl  : inout std_logic;
         hdmi_tx_rsda  : inout std_logic;
         hdmi_tx_p     : out   std_logic_vector(2 downto 0);
-        hdmi_tx_n     : out   std_logic_vector(2 downto 0);
+--        hdmi_tx_n     : out   std_logic_vector(2 downto 0);
         
         pixel_clk : out std_logic;
         -------------------------------
@@ -303,7 +303,7 @@ begin
     hdmi_rx_cec  <= 'Z';
 
     debug(7)          <= raw_hsync;
-    debug(6)          <= raw_vsync;
+--    debug(6)          <= raw_vsync;
 --    debug(5)          <= is_second_field_i;  
 --    debug(4)          <= is_interlaced_i;      
 --    debug(2)          <= data_synced;
@@ -315,7 +315,7 @@ i_edid_rom: entity work.edid_rom
              clk      => clk100,
              sclk_raw => hdmi_rx_scl,
              sdat_raw => hdmi_rx_sda,
-             edid_debug => open);
+             edid_debug(2) => debug(6));
 
     ---------------------
     -- Input buffers
@@ -511,13 +511,13 @@ i_DVID_output: DVID_output port map (
     -- Output buffers
     -----------------
     hdmi_tx_clk_p <= tmds_out_clk;
-    hdmi_tx_clk_n <= not tmds_out_clk;
+--    hdmi_tx_clk_n <= not tmds_out_clk;
     hdmi_tx_p(0) <= tmds_out_ch0;
-    hdmi_tx_n(0) <= not tmds_out_ch0;
+--    hdmi_tx_n(0) <= not tmds_out_ch0;
     hdmi_tx_p(1) <= tmds_out_ch1;
-    hdmi_tx_n(1) <= not tmds_out_ch1;
+--    hdmi_tx_n(1) <= not tmds_out_ch1;
     hdmi_tx_p(2) <= tmds_out_ch2;
-    hdmi_tx_n(2) <= not tmds_out_ch2;
+--    hdmi_tx_n(2) <= not tmds_out_ch2;
     
     -- Detect when VSYNC is held high for 8 cycles, so we can synchronise the capture of symbols 
 process(pixel_clk_i)
