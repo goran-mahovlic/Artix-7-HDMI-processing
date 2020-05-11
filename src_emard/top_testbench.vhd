@@ -32,7 +32,8 @@ Port
   gn8: inout std_logic;
   gp: inout std_logic_vector(27 downto 13);
   gpa: in std_logic_vector(12 downto 9);
-  gpb: inout std_logic_vector(8 downto 0); 
+  gpb: inout std_logic_vector(8 downto 0);
+  gnb: inout std_logic_vector(6 downto 0);
   gn: inout std_logic_vector(27 downto 13);
   -- For dumping symbols
   ftdi_rxd : out std_logic      
@@ -59,7 +60,7 @@ begin
   --  led <= rec_red;
     wifi_gpio0 <= btn(0);
     gpdi_ethn <= '1' when btn(0) = '1' else '0';
-    gn(13) <= '1' when btn(1) = '0' else '1'; -- eth- hotplug
+    gn(13) <= '1' when btn(0) = '1' else '0'; -- eth- hotplug
     reset <= not btn(0);
 
     -- clock for video generator and logic
@@ -67,8 +68,8 @@ begin
     port map
     (
       CLKI=> clk_25mhz,
-      CLKOP => clk_250,
-      CLKOS => clk_125,
+--      CLKOP => clk_250,
+--      CLKOS => clk_125,
       CLKOS2 => clk_25,
       CLKOS3 => clk_100,
       LOCK => locked1
@@ -95,7 +96,7 @@ begin
 --    );
     
     -- connect output to monitor
---    gpdi_dp(2 downto 0) <= gpa(11 downto 9); --tmds_p;
+    gpdi_dp(2 downto 0) <= gpa(11 downto 9); --tmds_p;
 
     -- gpdi_dn <= tmds_n;
    -- gn8 <= gpdi_scl;
@@ -119,25 +120,40 @@ begin
     locked <= locked1;
     end generate;
 
-    blink_inst: entity work.blink
-    port map
-    (
---      clk => clk_shift,
-      clk => clk_250,
-      led(3) => led(4)
-    );
+--    blink_inst: entity work.blink
+--    port map
+--    (
+--      clk => clk_250,
+--      led(3) => led(4)
+--    );
     
     blink_shift_inst: entity work.blink
     port map
     (
-      clk => clk_shift,
-      led(3) => led(6)
+      clk => clk_pixel,
+      led(0) => led(6)
     );
 
     led(7) <= locked;
-    led(5) <= locked1;
+    led(5) <= debug(6);
+    led(4) <= rec_hsync;
+    led(3) <= rec_vsync;
+    led(2 downto 0) <= rec_blue(7 downto 5);
 
-    led(3 downto 0) <= debug(3 downto 0);
+    gnb(0) <= rec_vsync;
+    gpb(0) <= rec_hsync;
+    gnb(1) <= rec_red(7);
+    gpb(1) <= rec_red(6);
+    gnb(2) <= rec_red(5);
+    gpb(2) <= rec_green(7);
+    gnb(3) <= rec_green(6);
+    gpb(3) <= rec_green(5);
+    gnb(4) <= rec_blue(7);
+    gpb(4) <= rec_blue(6);
+    gnb(5) <= rec_blue(5);
+    gpb(5) <= rec_red(4);
+    gnb(6) <= rec_green(4);
+    gpb(6) <= rec_blue(4);
 
     g_yes_hamsterz: if C_hamsterz generate
     hdmi_design_inst: entity work.hdmi_design
@@ -163,26 +179,26 @@ begin
 
       -- VGA out
       rec_blank  => rec_blank,
-      rec_hsync  => rec_vsync,
+      rec_hsync  => rec_hsync,
       rec_vsync  => rec_vsync,
       rec_red  => rec_red,
       rec_green  => rec_green,
       rec_blue  => rec_blue,
 
       -- HDMI in
-      hdmi_rx_clk_n => not gpa(12), 
+--      hdmi_rx_clk_n => not gpa(12), 
       hdmi_rx_clk_p => gpa(12),
-      hdmi_rx_n => not gpa(11 downto 9), 
+--      hdmi_rx_n => not gpa(11 downto 9), 
       hdmi_rx_p => gpa(11 downto 9),
       hdmi_rx_txen => open,
       hdmi_rx_scl => gn8,
       hdmi_rx_sda => gpb(8),
       
       -- HDMI out
-      hdmi_tx_clk_n => gpdi_dn(3),
+--      hdmi_tx_clk_n => gpdi_dn(3),
       hdmi_tx_clk_p => gpdi_dp(3),
-      hdmi_tx_n => gpdi_dn(2 downto 0),
-      hdmi_tx_p => gpdi_dp(2 downto 0),
+--      hdmi_tx_n => gpdi_dn(2 downto 0),
+--      hdmi_tx_p(2) => gpdi_dp(2),
       hdmi_tx_hpd => '1',
 
       rs232_tx => ftdi_rxd
