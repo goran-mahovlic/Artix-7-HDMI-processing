@@ -8,7 +8,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity blink is
   generic
   (
-    bits: integer := 23
+    bits: integer := 31
   );
   port
   (
