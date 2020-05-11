@@ -70,6 +70,14 @@ entity hdmi_design is
         test_green    : std_logic_vector(7 downto 0);
         test_blue     : std_logic_vector(7 downto 0);
 
+        --recovered VGA from HDMI
+        rec_blank    : out std_logic;
+        rec_hsync    : out std_logic;
+        rec_vsync    : out std_logic;
+        rec_red      : out std_logic_vector(7 downto 0);
+        rec_green    : out std_logic_vector(7 downto 0);
+        rec_blue     : out std_logic_vector(7 downto 0);
+
         --HDMI input signals
         hdmi_rx_cec   : inout std_logic;
         hdmi_rx_hpa   : out   std_logic;
@@ -128,6 +136,13 @@ architecture Behavioral of hdmi_design is
     signal out_green : std_logic_vector(7 downto 0);
     signal out_blue  : std_logic_vector(7 downto 0);
 
+--    signal rec_blank : std_logic;
+--    signal rec_hsync : std_logic;
+--    signal rec_vsync : std_logic;
+--    signal rec_red   : std_logic_vector(7 downto 0);
+--    signal rec_green : std_logic_vector(7 downto 0);
+--    signal rec_blue  : std_logic_vector(7 downto 0);
+
     signal audio_channel : std_logic_vector(2 downto 0);
     signal audio_de      : std_logic;
     signal audio_sample  : std_logic_vector(23 downto 0);
@@ -139,6 +154,13 @@ begin
     debug_pmod <= debug;    
     led        <= debug;
     
+    rec_blank <= in_blank;
+    rec_hsync <= in_hsync;
+    rec_vsync <= in_vsync;
+    rec_red   <= in_red;
+    rec_green <= in_green;
+    rec_blue  <= in_blue;
+
 i_hdmi_io: entity work.hdmi_io port map ( 
         clk100           => clk100,
         clk_pixel        => clk_pixel,
@@ -212,30 +234,19 @@ i_hdmi_io: entity work.hdmi_io port map (
     );
     
 -- switched test or input picture
-process(pixel_clk)
-begin
-  if rising_edge(pixel_clk) then
-    if btn(1) = '1' then
-        sw_blank <= test_blank;
-        sw_hsync <= test_hsync;
-        sw_vsync <= test_vsync;
-        sw_red   <= test_red;
-        sw_green <= test_green;
-        sw_blue  <= test_blue;
-        sw_interlaced   <= '0';
-        sw_second_field <= '0';
-    else
-        sw_blank <= in_blank;
-        sw_hsync <= in_hsync;
-        sw_vsync <= in_vsync;
-        sw_red   <= in_red;
-        sw_green <= in_green;
-        sw_blue  <= in_blue;
-        sw_interlaced   <= is_interlaced;
-        sw_second_field <= is_second_field;
-    end if;
-  end if;
-end process;
+--process(pixel_clk)
+--begin
+--  if rising_edge(pixel_clk) then
+    sw_blank <= in_blank;
+    sw_hsync <= in_hsync;
+    sw_vsync <= in_vsync;
+    sw_red   <= in_red;
+    sw_green <= in_green;
+    sw_blue  <= in_blue;
+    sw_interlaced   <= is_interlaced;
+    sw_second_field <= is_second_field;
+--  end if;
+--end process;
 
         btn_sample <= x"00" & btn(4 downto 1) & x"000";
 
