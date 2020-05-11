@@ -28,7 +28,8 @@ Port
         --hdmi_rx_p     : in    std_logic_vector(2 downto 0);
 
   -- Digital Video (differential inputs)
-  gpdi_dp, gpdi_dn: out std_logic_vector(3 downto 0);
+--  gpdi_dp, gpdi_dn: out std_logic_vector(3 downto 0);
+  gpdi_dp: out std_logic_vector(3 downto 0);
   -- control lines as input with pullups to activate hotplug autodetection
   -- to enable hotplug, gpdi_ethn capacitor should be bypassed by 470 ohm resistor
   -- it's a C closest to the DIP switch
