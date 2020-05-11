@@ -2,7 +2,7 @@
 PROJECT = dvicapture
 BOARD = ulx3s
 # 12 25 45 85
-FPGA_SIZE = 12
+FPGA_SIZE = 85
 
 FPGA_PACKAGE = 6bg381c
 # config flash: 1:SPI (standard), 4:QSPI (quad)
@@ -15,33 +15,34 @@ CONSTRAINTS = ../constraints/ulx3s_v20.lpf
 TOP_MODULE = top_testbench
 TOP_MODULE_FILE = ../../../../src_emard/$(TOP_MODULE).vhd
 
-CLK0_NAME = clk_25_v
-CLK0_FILE_NAME = clocks/$(CLK0_NAME).v
-CLK0_OPTIONS = \
-  --module=$(CLK0_NAME) \
-  --clkin=25 \
-  --clkout0=250 \
-  --clkout1=125 \
-  --clkout2=25 \
-  --clkout3=100
+#CLK0_NAME = clk_25_v
+#CLK0_FILE_NAME = clocks/$(CLK0_NAME).v
+#CLK0_OPTIONS = \
+#  --module=$(CLK0_NAME) \
+#  --clkin=25 \
+#  --clkout0=250 \
+#  --clkout1=125 \
+#  --clkout2=25 \
+#  --clkout3=100
 
 #  --dynamic \
 #  --reset \
 #  --standby
 
-CLK1_NAME = clk_video_v
-CLK1_FILE_NAME = clocks/$(CLK1_NAME).v
-CLK1_OPTIONS = \
-  --module=$(CLK1_NAME) \
-  --clkin=25 \
-  --clkout0=250 \
-  --clkout1=125 \
-  --clkout2=25 \
-  --clkout3=100
+#CLK1_NAME = clk_video_v
+#CLK1_FILE_NAME = clocks/$(CLK1_NAME).v
+#CLK1_OPTIONS = \
+#  --module=$(CLK1_NAME) \
+#  --clkin=25 \
+#  --clkout0=250 \
+#  --clkout1=125 \
+#  --clkout2=25 \
+#  --clkout3=100
 
 VERILOG_FILES = \
-  $(CLK0_FILE_NAME) \
-  $(CLK1_FILE_NAME) \
+#  $(CLK0_FILE_NAME) \
+#  $(CLK1_FILE_NAME) \
+  ../../../../src_emard/tmds_decoder_v.v \
   ../../../../src_emard/fake_differential_v.v \
   ../../../../src_emard/videotest640x480_v.v
 
