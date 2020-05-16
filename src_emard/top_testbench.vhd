@@ -67,6 +67,7 @@ begin
     gpdi_ethn <= '1' when btn(0) = '1' else '0';
     gn13 <= '1' when btn(0) = '1' else '0'; -- eth- hotplug
     reset <= not btn(0);
+--  If pll is not locked connect blink to PLL block     
     reset_pll <= '0' when locked = '1' else reset_pll_blink;
 
     -- clock for video generator and logic
@@ -74,68 +75,23 @@ begin
     port map
     (
       CLKI=> clk_25mhz,
---      CLKOP => clk_250,
---      CLKOS => clk_125,
       CLKOS2 => clk_25,
       CLKOS3 => clk_100,
       LOCK => locked1
     );
     
-    -- video generator
-
---    videotest_inst: entity work.videotest640x480
---    port map
---    (
---      clk_pixel  => clk_25,
---      clk_shift  => clk_250,
---      out_blank  => test_blank,
---      out_hsync  => test_hsync,
---      out_vsync  => test_vsync,
---      out_red    => test_red,
---      out_green  => test_green,
---      out_blue   => test_blue,
---      outp_red   => outp_red,
---      outp_green => outp_green,
---      outp_blue  => outp_blue,
---      out_p      => open,
---      out_n      => open
---    );
-    
-    -- connect output to monitor
---    gpdi_dp(2 downto 0) <= gpa(11 downto 9); --tmds_p;
+    -- connect output to monitor Second PMOD on RIGHT BOTTOM
     gp(15) <= not gpa(12);
     gp(16) <= not gpa(11);
     gp(17) <= not gpa(10);
     gp(18) <= not gpa(9);
---    ILVDS port map(A=>clk_100_p, AN=>clk_100_n, Z=>clk_100);
 
---   clock_diff2se:
---    INRDB port map(D=>gpa(12), E=>'1', Q=>clk_PIXEL_IN);
---    ILVDS port map(A=>gpa(12), AN=>gna(12), Z=>clk_PIXEL_LVDS);
---   D0_diff2se:
---    ILVDS port map(A=>gpa(9), AN=>gna(9), Z=>D0);
---   D1_diff2se:
---    ILVDS port map(A=>gpa(10), AN=>gna(10), Z=>D1);
---   D2_diff2se:
---    ILVDS port map(A=>gpa(11), AN=>gna(11), Z=>D2);
-
-    -- gpdi_dn <= tmds_n;
-   -- gn8 <= gpdi_scl;
-   -- gpb(8) <= gpdi_sda;
-    
---        CLKI: in  std_logic;
---        CLKOP: out  std_logic;
---        CLKOS: out  std_logic);
-
-    -- clock recovery PLL
+    -- clock recovery PLL with reset and lock
     g_yes_internal_pll: if C_internal_pll generate
     clk_video_inst: entity work.clk_25_25_250_vid
     port map
     (
       CLKI => gpa(12), -- take tmds clock as input
---      CLKI => clk_PIXEL_IN,
---      CLKOP => clk_shift,
---      CLKOS2 => clk_pixel,
       CLKOP => clk_pixel,
       CLKOS => clk_shift,
       LOCK => locked,
@@ -149,13 +105,15 @@ begin
     locked <= locked1;
     end generate;
 
+    -- Used for reseting PLL block
     blink_clock_recovery_inst: entity work.blink
     port map
     (
       clk => clk_25mhz,
-      led(0) => reset_pll_blink
+      led(1) => reset_pll_blink
     );
     
+    -- Used for indication of working clock recovery
     blink_shift_inst: entity work.blink
     port map
     (
@@ -163,12 +121,17 @@ begin
       led(0) => led(6)
     );
 
+    -- PLL locked if on
     led(7) <= locked;
+    -- If blinks - clock recovery works
     led(5) <= debug(6);
+    -- H-V sync ready for output
     led(4) <= rec_hsync;
     led(3) <= rec_vsync;
+    -- blue color data
     led(2 downto 0) <= rec_blue(2 downto 0);
 
+    -- Output to VGA PMOD - UPPER LEFT 
     gnb(0) <= rec_vsync;
     gpb(0) <= rec_hsync;
     gnb(1) <= rec_red(7);
@@ -184,6 +147,7 @@ begin
     gnb(6) <= rec_green(4);
     gpb(6) <= rec_blue(4);
 
+    -- Magic block
     g_yes_hamsterz: if C_hamsterz generate
     hdmi_design_inst: entity work.hdmi_design
     port map
@@ -198,7 +162,7 @@ begin
       btn        => btn,
       debug_pmod => open,
       
-      -- VGA in
+      -- VGA in -- used only with internal generator
       test_blank => test_blank,
       test_hsync => test_hsync,
       test_vsync => test_vsync,
@@ -206,7 +170,7 @@ begin
       test_green => test_green,
       test_blue  => test_blue,
 
-      -- VGA out
+      -- VGA out -- rearly starts to blink - mostly V and H sync
       rec_blank  => rec_blank,
       rec_hsync  => rec_hsync,
       rec_vsync  => rec_vsync,
@@ -221,10 +185,11 @@ begin
       hdmi_rx_p => gpa(11 downto 9),
 
       hdmi_rx_txen => open,
+      -- Working I2C EDID
       hdmi_rx_scl => gn8,
       hdmi_rx_sda => gpb(8),
       
-      -- HDMI out
+      -- HDMI out - still not working
 --      hdmi_tx_clk_n => gpdi_dn(3),
       hdmi_tx_clk_p => gpdi_dp(3),
 --      hdmi_tx_n => gpdi_dn(2 downto 0),
@@ -235,6 +200,7 @@ begin
     );
     end generate;
 
+    -- used only if magic block is not used
     g_not_hamsterz: if not C_hamsterz generate
     -- deserialize tmds_p to parallel 10-bit
     -- clk_pixel and clk_shift must be phase aligned with tmds_p(3) clock
