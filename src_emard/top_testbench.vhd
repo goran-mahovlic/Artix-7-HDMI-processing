@@ -29,9 +29,9 @@ Port
   -- i2c shared for digital video and RTC
   gpdi_scl: in std_logic;
   gpdi_sda: inout std_logic;
-  gn8: inout std_logic;
-  gp: inout std_logic_vector(27 downto 13);
-  gpa: in std_logic_vector(12 downto 9);
+  gn8,gn13: inout std_logic;
+  gp: out std_logic_vector(27 downto 13);
+  gpa, gna: in std_logic_vector(12 downto 9);
   gpb: inout std_logic_vector(8 downto 0);
   gnb: inout std_logic_vector(6 downto 0);
   gn: inout std_logic_vector(27 downto 13);
@@ -41,6 +41,10 @@ Port
 end;
 
 architecture Behavioral of top_testbench is
+    component ILVDS
+      port (A, AN: in std_logic; Z: out std_logic);
+    end component;
+
     constant C_internal_pll: boolean := true;
     constant C_hamsterz: boolean := true;
     signal clk_100, locked, locked1 : std_logic;
@@ -56,12 +60,14 @@ architecture Behavioral of top_testbench is
     signal vga_hsync, vga_vsync, vga_blank: std_logic; -- frame control
     signal fin_clock, fin_red, fin_green, fin_blue: std_logic_vector(1 downto 0); -- VGA back to final TMDS
     signal tmds_p, tmds_n: std_logic_vector(3 downto 0); -- internally generated TMDS
+    signal reset_pll,reset_pll_blink: std_logic;
 begin
   --  led <= rec_red;
     wifi_gpio0 <= btn(0);
     gpdi_ethn <= '1' when btn(0) = '1' else '0';
-    gn(13) <= '1' when btn(0) = '1' else '0'; -- eth- hotplug
+    gn13 <= '1' when btn(0) = '1' else '0'; -- eth- hotplug
     reset <= not btn(0);
+    reset_pll <= '0' when locked = '1' else reset_pll_blink;
 
     -- clock for video generator and logic
     clk_25_inst: entity work.clk_25
@@ -96,21 +102,44 @@ begin
 --    );
     
     -- connect output to monitor
-    gpdi_dp(2 downto 0) <= gpa(11 downto 9); --tmds_p;
+--    gpdi_dp(2 downto 0) <= gpa(11 downto 9); --tmds_p;
+    gp(15) <= not gpa(12);
+    gp(16) <= not gpa(11);
+    gp(17) <= not gpa(10);
+    gp(18) <= not gpa(9);
+--    ILVDS port map(A=>clk_100_p, AN=>clk_100_n, Z=>clk_100);
+
+--   clock_diff2se:
+--    INRDB port map(D=>gpa(12), E=>'1', Q=>clk_PIXEL_IN);
+--    ILVDS port map(A=>gpa(12), AN=>gna(12), Z=>clk_PIXEL_LVDS);
+--   D0_diff2se:
+--    ILVDS port map(A=>gpa(9), AN=>gna(9), Z=>D0);
+--   D1_diff2se:
+--    ILVDS port map(A=>gpa(10), AN=>gna(10), Z=>D1);
+--   D2_diff2se:
+--    ILVDS port map(A=>gpa(11), AN=>gna(11), Z=>D2);
 
     -- gpdi_dn <= tmds_n;
    -- gn8 <= gpdi_scl;
    -- gpb(8) <= gpdi_sda;
     
+--        CLKI: in  std_logic;
+--        CLKOP: out  std_logic;
+--        CLKOS: out  std_logic);
+
     -- clock recovery PLL
     g_yes_internal_pll: if C_internal_pll generate
-    clk_video_inst: entity work.clk_video
+    clk_video_inst: entity work.clk_25_25_250_vid
     port map
     (
       CLKI => gpa(12), -- take tmds clock as input
-      CLKOP => clk_shift,
-      CLKOS2 => clk_pixel,
-      LOCK => locked
+--      CLKI => clk_PIXEL_IN,
+--      CLKOP => clk_shift,
+--      CLKOS2 => clk_pixel,
+      CLKOP => clk_pixel,
+      CLKOS => clk_shift,
+      LOCK => locked,
+      RST => reset_pll
     );
     end generate;
 
@@ -120,12 +149,12 @@ begin
     locked <= locked1;
     end generate;
 
---    blink_inst: entity work.blink
---    port map
---    (
---      clk => clk_250,
---      led(3) => led(4)
---    );
+    blink_clock_recovery_inst: entity work.blink
+    port map
+    (
+      clk => clk_25mhz,
+      led(0) => reset_pll_blink
+    );
     
     blink_shift_inst: entity work.blink
     port map
@@ -138,7 +167,7 @@ begin
     led(5) <= debug(6);
     led(4) <= rec_hsync;
     led(3) <= rec_vsync;
-    led(2 downto 0) <= rec_blue(7 downto 5);
+    led(2 downto 0) <= rec_blue(2 downto 0);
 
     gnb(0) <= rec_vsync;
     gpb(0) <= rec_hsync;
@@ -186,10 +215,11 @@ begin
       rec_blue  => rec_blue,
 
       -- HDMI in
---      hdmi_rx_clk_n => not gpa(12), 
+      hdmi_rx_clk_n => not gna(12), 
       hdmi_rx_clk_p => gpa(12),
---      hdmi_rx_n => not gpa(11 downto 9), 
+      hdmi_rx_n => not gpa(11 downto 9), 
       hdmi_rx_p => gpa(11 downto 9),
+
       hdmi_rx_txen => open,
       hdmi_rx_scl => gn8,
       hdmi_rx_sda => gpb(8),
@@ -198,7 +228,7 @@ begin
 --      hdmi_tx_clk_n => gpdi_dn(3),
       hdmi_tx_clk_p => gpdi_dp(3),
 --      hdmi_tx_n => gpdi_dn(2 downto 0),
---      hdmi_tx_p(2) => gpdi_dp(2),
+      hdmi_tx_p(2 downto 0) => gpdi_dp(2 downto 0),
       hdmi_tx_hpd => '1',
 
       rs232_tx => ftdi_rxd
