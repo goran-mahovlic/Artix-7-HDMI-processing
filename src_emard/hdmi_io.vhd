@@ -70,9 +70,9 @@ entity hdmi_io is
         hdmi_rx_scl   : in    std_logic;
         hdmi_rx_sda   : inout std_logic;
         hdmi_rx_txen  : out   std_logic;
---        hdmi_rx_clk_n : in    std_logic;
+        hdmi_rx_clk_n : in    std_logic;
         hdmi_rx_clk_p : in    std_logic;
- --       hdmi_rx_n     : in    std_logic_vector(2 downto 0);
+        hdmi_rx_n     : in    std_logic_vector(2 downto 0);
         hdmi_rx_p     : in    std_logic_vector(2 downto 0);
         
         -------------

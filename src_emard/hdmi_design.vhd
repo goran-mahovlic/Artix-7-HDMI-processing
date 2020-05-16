@@ -84,9 +84,9 @@ entity hdmi_design is
         hdmi_rx_scl   : in    std_logic;
         hdmi_rx_sda   : inout std_logic;
         hdmi_rx_txen  : out   std_logic;
---        hdmi_rx_clk_n : in    std_logic;
+        hdmi_rx_clk_n : in    std_logic;
         hdmi_rx_clk_p : in    std_logic;
---        hdmi_rx_n     : in    std_logic_vector(2 downto 0);
+        hdmi_rx_n     : in    std_logic_vector(2 downto 0);
         hdmi_rx_p     : in    std_logic_vector(2 downto 0);
 
         --- HDMI out
@@ -180,10 +180,10 @@ i_hdmi_io: entity work.hdmi_io port map (
         hdmi_rx_scl   => hdmi_rx_scl,
         hdmi_rx_sda   => hdmi_rx_sda,
         hdmi_rx_txen  => hdmi_rx_txen,
---        hdmi_rx_clk_n => hdmi_rx_clk_n,
+        hdmi_rx_clk_n => hdmi_rx_clk_n,
         hdmi_rx_clk_p => hdmi_rx_clk_p,
         hdmi_rx_p     => hdmi_rx_p,
---        hdmi_rx_n     => hdmi_rx_n,
+        hdmi_rx_n     => hdmi_rx_n,
 
         ----------------------
         -- HDMI output signals
