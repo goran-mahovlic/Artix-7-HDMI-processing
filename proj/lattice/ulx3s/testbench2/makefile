@@ -80,6 +80,7 @@ VHDL_FILES = \
   ../../../../src_emard/tmds_dekoder.vhd \
   ../../../../src_emard/hdmi_input.vhd \
   ../../../../src_emard/hdmi_io.vhd \
+  ../../../../src_emard/vga_generator.vhd \
   ../../../../src_emard/hdmi_design.vhd
 
 SCRIPTS = ../scripts
