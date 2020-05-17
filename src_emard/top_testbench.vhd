@@ -32,8 +32,8 @@ Port
   gn8,gn13: inout std_logic;
   gp: out std_logic_vector(27 downto 13);
   gpa, gna: in std_logic_vector(12 downto 9);
-  gpb: out std_logic_vector(4 downto 1);
---  gnb: inout std_logic_vector(6 downto 0);
+  gpb: out std_logic_vector(6 downto 0);
+  gnb: out std_logic_vector(6 downto 0);
   gn: inout std_logic_vector(27 downto 13);
   -- For dumping symbols
   ftdi_rxd : out std_logic      
@@ -57,6 +57,7 @@ architecture Behavioral of top_testbench is
     signal outp_red, outp_green, outp_blue: std_logic_vector(9 downto 0); -- TMDS encoded 10-bit
     signal des_red, des_green, des_blue: std_logic_vector(9 downto 0); -- deserialized 10-bit TMDS
     signal vga_red, vga_green, vga_blue: std_logic_vector(7 downto 0); -- 8-bit RGB color decoded
+    signal vga_red_8, vga_green_8, vga_blue_8: std_logic_vector(7 downto 0); -- 4-bit RGB color ready for VGA out
     signal vga_hsync, vga_vsync, vga_blank: std_logic; -- frame control
     signal fin_clock, fin_red, fin_green, fin_blue: std_logic_vector(1 downto 0); -- VGA back to final TMDS
     signal tmds_p, tmds_n: std_logic_vector(3 downto 0); -- internally generated TMDS
@@ -75,24 +76,16 @@ begin
     port map
     (
       CLKI=> clk_25mhz,
-      CLKOS2 => clk_25,
+      CLKOS2 => open,
       CLKOS3 => clk_100,
       LOCK => locked1
    );
     
     -- connect output to monitor Second PMOD on RIGHT BOTTOM
---    gp(15) <= clk_pixel;
---    gp(16) <= gpa(11);
---    gp(17) <= gpa(10);
---    gp(18) <= gpa(9);
-
---    gpb(1) <= clk_pixel;
---    gpb(2) <= gpa(11);
---    gpb(3) <= gpa(10);
---    gpb(4) <= gpa(9);
-
---      gpdi_dp(3) <= clk_pixel;
---      gpdi_dp(2 downto 0) <= gpa(11 downto 9);
+    gp(15) <= clk_pixel;
+    gp(16) <= gpa(11);
+    gp(17) <= gpa(10);
+    gp(18) <= gpa(9);
 
     -- clock recovery PLL with reset and lock
     g_yes_internal_pll: if C_internal_pll generate
@@ -100,8 +93,9 @@ begin
     port map
     (
       CLKI => gpa(12), -- take tmds clock as input
-      CLKOP => clk_pixel,
+      CLKOP => clk_25,
       CLKOS => clk_shift,
+      CLKOS2 => clk_pixel,      
       LOCK => locked,
       RST => reset_pll
     );
@@ -144,57 +138,37 @@ begin
     gpdi_dp(1) <= fin_green(0);
     gpdi_dp(0) <= fin_blue(0);
 
---    gn(15) <= vga_red(7);
---    gp(16) <= vga_green(7);
---    gn(18) <= vga_blue(7);
---    gp(14) <= vga_hsync;
---    gn(14) <= vga_vsync;
+--    gn(15) <= vga_red_8(7);
+--    gp(15) <= vga_red_8(6);
+--    gn(16) <= vga_red_8(5);
+--    gp(19) <= vga_red_8(4);
+--    gp(16) <= vga_green_8(7);
+--    gn(17) <= vga_green_8(6);
+--    gp(17) <= vga_green_8(5);
+--    gn(20) <= vga_green_8(4);
+--    gn(18) <= vga_blue_8(7);
+--    gp(18) <= vga_blue_8(6);
+--    gn(19) <= vga_blue_8(5);
+--    gp(20) <= vga_blue_8(4);
 
     led(0) <= vga_hsync;
     led(1) <= vga_vsync;
-    led(2) <= vga_blank;
+    led(2) <= vga_red_8(7);
 
-    -- Output to VGA PMOD - UPPER LEFT 
---    gn(14) <= rec_vsync;
---    gp(14) <= rec_hsync;
---    gn(15) <= rec_red(7);
---    gp(15) <= rec_red(6);
---    gn(16) <= rec_red(5);
---    gp(16) <= rec_green(7);
---    gn(17) <= rec_green(6);
---    gp(17) <= rec_green(5);
---    gn(18) <= rec_blue(7);
---    gp(18) <= rec_blue(6);
---    gn(19) <= rec_blue(5);
---    gp(19) <= rec_red(4);
---    gn(20) <= rec_green(4);
---    gp(20) <= rec_blue(4);
-
---    gn(15) <= '1';
---    gp(15) <= '1';
---    gn(16) <= '1';
---    gp(16) <= '1';
---    gn(17) <= '1';
---    gp(17) <= '1';
---    gn(18) <= '0'; -- blue(7)
---    gp(18) <= '0'; -- blue(6)
---    gn(19) <= '0'; -- blue(5)
---    gp(19) <= '1'; -- red(4)
---    gn(20) <= '1'; -- green(4)
- --   gp(20) <= '0'; -- blue(4)
-
---    gnb(1) <= rec_red(7);
---    gpb(1) <= rec_red(6);
---    gnb(2) <= rec_red(5);
---    gpb(2) <= rec_green(7);
---    gnb(3) <= rec_green(6);
---    gpb(3) <= rec_green(5);
---    gnb(4) <= rec_blue(7);
---    gpb(4) <= rec_blue(6);
---    gnb(5) <= rec_blue(5);
---    gpb(5) <= rec_red(4);
---    gnb(6) <= rec_green(4);
---    gpb(6) <= rec_blue(4);
+    gnb(0) <= vga_vsync;
+    gpb(0) <= vga_hsync;
+    gnb(1) <= vga_red_8(7);
+    gpb(1) <= vga_red_8(6);
+    gnb(2) <= vga_red_8(5);
+    gpb(2) <= vga_green_8(7);
+    gnb(3) <= vga_green_8(6);
+    gpb(3) <= vga_green_8(5);
+    gnb(4) <= vga_blue_8(7);
+    gpb(4) <= vga_blue_8(6);
+    gnb(5) <= vga_blue_8(5);
+    gpb(5) <= vga_red_8(4);
+    gnb(6) <= vga_green_8(4);
+    gpb(6) <= vga_blue_8(4);
 
     -- Magic block
     g_yes_hamsterz: if C_hamsterz generate
@@ -239,22 +213,13 @@ begin
       hdmi_rx_sda => gpb8,
       
       -- HDMI out - still not working
---      hdmi_tx_clk_n => gpdi_dn(3),
-
 --      hdmi_tx_clk_p => gpdi_dp(3),
 --      hdmi_tx_p(2 downto 0) => gpdi_dp(2 downto 0),
 
-      hdmi_tx_clk_p => gpb(1),
-      hdmi_tx_p(2) => gpb(2),
-      hdmi_tx_p(1) => gpb(3),
-      hdmi_tx_p(0) => gpb(4),
-
---      hdmi_tx_clk_p => open,
---      hdmi_tx_p(2) => open,
---      hdmi_tx_p(1) => open,
---      hdmi_tx_p(0) => open,      
-
---      hdmi_tx_n => gpdi_dn(2 downto 0),
+--      hdmi_tx_clk_p => gpb(1),
+--      hdmi_tx_p(2) => gpb(2),
+--      hdmi_tx_p(1) => gpb(3),
+--      hdmi_tx_p(0) => gpb(4),
 
       hdmi_tx_hpd => '1',
 
@@ -272,10 +237,13 @@ begin
       clk_pixel => clk_pixel,
       clk_shift => clk_shift,
 --      tmds_p => gpa(12 downto 9),
-      tmds_p(3) => gpa(12),
-      tmds_p(2) => gpa(11),
---      tmds_p(1) => fin_green(0),
-      tmds_p(1) => gpa(10),
+--      tmds_p(3) => gpa(12),
+--      tmds_p(2) => gpa(11),
+      tmds_p(3) => fin_clock(0),
+      tmds_p(2) => fin_red(0),
+--      tmds_p(2) => gpa(11),
+      tmds_p(1) => fin_green(0),
+--      tmds_p(1) => gpa(10),
       tmds_p(0) => fin_blue(0),
 
       outp_red => des_red,
@@ -293,9 +261,11 @@ begin
       dvi_green => des_green,
       dvi_blue => des_blue,
       --dvi_blue => outp_blue, -- original blue contains syncs. monitor should show picture
-      vga_red(7) => gn(15),
-      vga_green(7) => gp(16),
-      vga_blue(7) => gn(18),
+ --     vga_red => vga_red_8,
+      vga_red => open,
+      vga_green => vga_green_8,
+      vga_blue => vga_blue_8,
+ 
       vga_hsync => gp(14),
       vga_vsync => gn(14),
       vga_blank => open
@@ -324,7 +294,7 @@ begin
     port map
     (
       clk25 => clk_pixel,
-      red_out => vga_red,
+      red_out => vga_red_8,
       green_out => vga_green,
       blue_out => vga_blue,
       hs_out => vga_hsync,
