@@ -42,14 +42,14 @@ TOP_MODULE_FILE = ../../../../src_emard/$(TOP_MODULE).vhd
 VERILOG_FILES = \
 #  $(CLK0_FILE_NAME) \
 #  $(CLK1_FILE_NAME) \
-  ../../../../src_emard/tmds_decoder_v.v \
-  ../../../../src_emard/fake_differential_v.v \
-  ../../../../src_emard/videotest640x480_v.v
+#  ../../../../src_emard/tmds_decoder_v.v \
+#  ../../../../src_emard/fake_differential_v.v \
+#  ../../../../src_emard/videotest640x480_v.v
 
 VHDL_FILES = \
   $(TOP_MODULE_FILE) \
   clocks/clk_25.vhd \
-  clocks/clk_video.vhd \
+  clocks/clk_25_25_250_vid.vhd \
   ../../../../src/edid_rom.vhd \
   ../../../../src/pixel_processing.vhd \
   ../../../../src/line_delay.vhd \
