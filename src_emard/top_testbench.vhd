@@ -23,7 +23,7 @@ Port
   -- control lines as input with pullups to activate hotplug autodetection
   -- to enable hotplug, gpdi_ethn capacitor should be bypassed by 470 ohm resistor
   -- it's a C closest to the DIP switch
-  gpdi_ethp, gpdi_ethn: inout std_logic;
+  gpdi_ethp, gpdi_ethn, gpb8: inout std_logic;
   gpdi_cec: in std_logic;
 
   -- i2c shared for digital video and RTC
@@ -32,8 +32,8 @@ Port
   gn8,gn13: inout std_logic;
   gp: out std_logic_vector(27 downto 13);
   gpa, gna: in std_logic_vector(12 downto 9);
-  gpb: inout std_logic_vector(8 downto 0);
-  gnb: inout std_logic_vector(6 downto 0);
+  gpb: out std_logic_vector(4 downto 1);
+--  gnb: inout std_logic_vector(6 downto 0);
   gn: inout std_logic_vector(27 downto 13);
   -- For dumping symbols
   ftdi_rxd : out std_logic      
@@ -46,7 +46,7 @@ architecture Behavioral of top_testbench is
     end component;
 
     constant C_internal_pll: boolean := true;
-    constant C_hamsterz: boolean := true;
+    constant C_hamsterz: boolean := false;
     signal clk_100, locked, locked1 : std_logic;
     signal clk_250, clk_125, clk_25: std_logic; -- to video generator
     signal clk_pixel, clk_shift: std_logic;
@@ -78,13 +78,21 @@ begin
       CLKOS2 => clk_25,
       CLKOS3 => clk_100,
       LOCK => locked1
-    );
+   );
     
     -- connect output to monitor Second PMOD on RIGHT BOTTOM
-    gp(15) <= not gpa(12);
-    gp(16) <= not gpa(11);
-    gp(17) <= not gpa(10);
-    gp(18) <= not gpa(9);
+--    gp(15) <= clk_pixel;
+--    gp(16) <= gpa(11);
+--    gp(17) <= gpa(10);
+--    gp(18) <= gpa(9);
+
+--    gpb(1) <= clk_pixel;
+--    gpb(2) <= gpa(11);
+--    gpb(3) <= gpa(10);
+--    gpb(4) <= gpa(9);
+
+--      gpdi_dp(3) <= clk_pixel;
+--      gpdi_dp(2 downto 0) <= gpa(11 downto 9);
 
     -- clock recovery PLL with reset and lock
     g_yes_internal_pll: if C_internal_pll generate
@@ -124,28 +132,69 @@ begin
     -- PLL locked if on
     led(7) <= locked;
     -- If blinks - clock recovery works
-    led(5) <= debug(6);
+    led(5) <= debug(7);
     -- H-V sync ready for output
     led(4) <= rec_hsync;
     led(3) <= rec_vsync;
     -- blue color data
-    led(2 downto 0) <= rec_blue(2 downto 0);
+--    led(2 downto 0) <= rec_blue(2 downto 0);
+
+    gpdi_dp(3) <= fin_clock(0);
+    gpdi_dp(2) <= fin_red(0);
+    gpdi_dp(1) <= fin_green(0);
+    gpdi_dp(0) <= fin_blue(0);
+
+--    gn(15) <= vga_red(7);
+--    gp(16) <= vga_green(7);
+--    gn(18) <= vga_blue(7);
+--    gp(14) <= vga_hsync;
+--    gn(14) <= vga_vsync;
+
+    led(0) <= vga_hsync;
+    led(1) <= vga_vsync;
+    led(2) <= vga_blank;
 
     -- Output to VGA PMOD - UPPER LEFT 
-    gnb(0) <= rec_vsync;
-    gpb(0) <= rec_hsync;
-    gnb(1) <= rec_red(7);
-    gpb(1) <= rec_red(6);
-    gnb(2) <= rec_red(5);
-    gpb(2) <= rec_green(7);
-    gnb(3) <= rec_green(6);
-    gpb(3) <= rec_green(5);
-    gnb(4) <= rec_blue(7);
-    gpb(4) <= rec_blue(6);
-    gnb(5) <= rec_blue(5);
-    gpb(5) <= rec_red(4);
-    gnb(6) <= rec_green(4);
-    gpb(6) <= rec_blue(4);
+--    gn(14) <= rec_vsync;
+--    gp(14) <= rec_hsync;
+--    gn(15) <= rec_red(7);
+--    gp(15) <= rec_red(6);
+--    gn(16) <= rec_red(5);
+--    gp(16) <= rec_green(7);
+--    gn(17) <= rec_green(6);
+--    gp(17) <= rec_green(5);
+--    gn(18) <= rec_blue(7);
+--    gp(18) <= rec_blue(6);
+--    gn(19) <= rec_blue(5);
+--    gp(19) <= rec_red(4);
+--    gn(20) <= rec_green(4);
+--    gp(20) <= rec_blue(4);
+
+--    gn(15) <= '1';
+--    gp(15) <= '1';
+--    gn(16) <= '1';
+--    gp(16) <= '1';
+--    gn(17) <= '1';
+--    gp(17) <= '1';
+--    gn(18) <= '0'; -- blue(7)
+--    gp(18) <= '0'; -- blue(6)
+--    gn(19) <= '0'; -- blue(5)
+--    gp(19) <= '1'; -- red(4)
+--    gn(20) <= '1'; -- green(4)
+ --   gp(20) <= '0'; -- blue(4)
+
+--    gnb(1) <= rec_red(7);
+--    gpb(1) <= rec_red(6);
+--    gnb(2) <= rec_red(5);
+--    gpb(2) <= rec_green(7);
+--    gnb(3) <= rec_green(6);
+--    gpb(3) <= rec_green(5);
+--    gnb(4) <= rec_blue(7);
+--    gpb(4) <= rec_blue(6);
+--    gnb(5) <= rec_blue(5);
+--    gpb(5) <= rec_red(4);
+--    gnb(6) <= rec_green(4);
+--    gpb(6) <= rec_blue(4);
 
     -- Magic block
     g_yes_hamsterz: if C_hamsterz generate
@@ -179,7 +228,7 @@ begin
       rec_blue  => rec_blue,
 
       -- HDMI in
-      hdmi_rx_clk_n => not gna(12), 
+      hdmi_rx_clk_n => not gpa(12), 
       hdmi_rx_clk_p => gpa(12),
       hdmi_rx_n => not gpa(11 downto 9), 
       hdmi_rx_p => gpa(11 downto 9),
@@ -187,13 +236,26 @@ begin
       hdmi_rx_txen => open,
       -- Working I2C EDID
       hdmi_rx_scl => gn8,
-      hdmi_rx_sda => gpb(8),
+      hdmi_rx_sda => gpb8,
       
       -- HDMI out - still not working
 --      hdmi_tx_clk_n => gpdi_dn(3),
-      hdmi_tx_clk_p => gpdi_dp(3),
+
+--      hdmi_tx_clk_p => gpdi_dp(3),
+--      hdmi_tx_p(2 downto 0) => gpdi_dp(2 downto 0),
+
+      hdmi_tx_clk_p => gpb(1),
+      hdmi_tx_p(2) => gpb(2),
+      hdmi_tx_p(1) => gpb(3),
+      hdmi_tx_p(0) => gpb(4),
+
+--      hdmi_tx_clk_p => open,
+--      hdmi_tx_p(2) => open,
+--      hdmi_tx_p(1) => open,
+--      hdmi_tx_p(0) => open,      
+
 --      hdmi_tx_n => gpdi_dn(2 downto 0),
-      hdmi_tx_p(2 downto 0) => gpdi_dp(2 downto 0),
+
       hdmi_tx_hpd => '1',
 
       rs232_tx => ftdi_rxd
@@ -209,7 +271,13 @@ begin
     (
       clk_pixel => clk_pixel,
       clk_shift => clk_shift,
-      tmds_p => gpa(12 downto 9),
+--      tmds_p => gpa(12 downto 9),
+      tmds_p(3) => gpa(12),
+      tmds_p(2) => gpa(11),
+--      tmds_p(1) => fin_green(0),
+      tmds_p(1) => gpa(10),
+      tmds_p(0) => fin_blue(0),
+
       outp_red => des_red,
       outp_green => des_green,
       outp_blue => des_blue
@@ -225,13 +293,14 @@ begin
       dvi_green => des_green,
       dvi_blue => des_blue,
       --dvi_blue => outp_blue, -- original blue contains syncs. monitor should show picture
-      vga_red => vga_red,
-      vga_green => vga_green,
-      vga_blue => vga_blue,
-      vga_hsync => vga_hsync,
-      vga_vsync => vga_vsync,
-      vga_blank => vga_blank
+      vga_red(7) => gn(15),
+      vga_green(7) => gp(16),
+      vga_blue(7) => gn(18),
+      vga_hsync => gp(14),
+      vga_vsync => gn(14),
+      vga_blank => open
     );
+
     -- VGA back to DVI-D
     vga2dvid_inst: entity work.vga2dvid
     port map
@@ -249,20 +318,20 @@ begin
       out_blue => fin_blue,
       out_clock => fin_clock
     );
-    -- DVI-D to differential
-    fake_differential_inst: entity work.fake_differential
+
+    -- VGA back to DVI-D
+    vga_generator_inst: entity work.vga_generator
     port map
     (
-      clk_shift => clk_shift,
-      in_red => fin_red,
-      in_green => fin_green,
-      in_blue => fin_blue,
-      in_clock => fin_clock,
-      out_p => gpdi_dp,
-      out_n => gpdi_dn
---      out_p => open,
---      out_n => open
+      clk25 => clk_pixel,
+      red_out => vga_red,
+      green_out => vga_green,
+      blue_out => vga_blue,
+      hs_out => vga_hsync,
+      vs_out => vga_vsync,
+      blank_out => vga_blank
     );
+
     end generate;
 
 end Behavioral;
